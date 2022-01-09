@@ -1,0 +1,42 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    ext {
+        appCompat_version = '1.4.0'
+        arch_version = '2.1.0'
+        compose_version = '1.0.5'
+        core_version = '1.7.0'
+        coroutine_version = '1.6.0-native-mt'
+        espresso_version = '3.4.0'
+        hilt_android_version_old = '2.37'
+        hilt_android_version = '2.40.5'
+        hilt_compiler_version = '1.0.0'
+        hilt_navigation_version = '1.0.0-rc01'
+        hilt_version_old = '2.38.1'
+        hilt_version = '2.40.5'
+        hilt_viewmodel_version = '1.0.0-alpha03'
+        junit_version = '4.13.2'
+        lifecycle_version = '2.4.0'
+        mockk_version = '1.12.2'
+        navigation_version = '2.4.0-rc01'
+        room_version = '2.4.0'
+        test_ext_version = '1.1.3'
+        test_coroutine_version = '1.6.0'
+        truth_verision = '1.1.3'
+    }
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:7.0.4"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31"
+        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.40.5'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
