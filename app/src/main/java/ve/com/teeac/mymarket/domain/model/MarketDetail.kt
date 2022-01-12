@@ -7,11 +7,24 @@ import androidx.room.PrimaryKey
 data class MarketDetail(
     val marketId: Long,
     @PrimaryKey
-    val id: Int,
+    val id: Long? = null,
     val quantity: Double = 1.0,
     val description: String,
-    val unitAmountDollar: Double = 0.00,
-    val unitAmount: Double= 0.00,
-    val amountDollar: Double = 0.00,
-    val amount: Double = 0.00
-)
+    var unitAmountDollar: Double = 0.00,
+    var unitAmount: Double= 0.00,
+    var amountDollar: Double = 0.00,
+    var amount: Double = 0.00
+){
+    fun addRate(rate: Double): MarketDetail{
+        if(rate == 0.00) return this
+        if(amount > 0.00 && amountDollar == 0.00){
+            amountDollar = amount / rate
+            unitAmountDollar = unitAmount / rate
+        }else if(amount == 0.00 && amountDollar > 0.00){
+            amount = amountDollar * rate
+            unitAmount = unitAmountDollar * rate
+        }
+        return this
+    }
+
+}

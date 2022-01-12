@@ -1,7 +1,8 @@
 package ve.com.teeac.mymarket.presentation.marketdetails
 
-import ve.com.teeac.mymarket.domain.model.AmountsSetup
+import ve.com.teeac.mymarket.domain.model.MarketDetail
 
 data class DetailsMarketState(
-    val amountsSetup: AmountsSetup
+    val marketId: Long? = null,
+    val list: List<MarketDetail> = emptyList(),
 )

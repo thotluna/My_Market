@@ -10,9 +10,9 @@ import androidx.compose.ui.res.stringResource
 import ve.com.teeac.mymarket.R
 
 @Composable
-fun FloatingButton(onNew: (id: Int?) -> Unit) {
+fun FloatingButton(onNew: () -> Unit) {
     FloatingActionButton(
-        onClick = { onNew(null) },
+        onClick = { onNew() },
         backgroundColor = MaterialTheme.colors.primary
     ) {
         Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(R.string.add_market))

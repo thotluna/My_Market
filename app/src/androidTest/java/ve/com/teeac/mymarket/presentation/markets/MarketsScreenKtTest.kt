@@ -1,5 +1,6 @@
 package ve.com.teeac.mymarket.presentation.markets
 
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.navigation.compose.NavHost
@@ -25,6 +26,7 @@ import ve.com.teeac.mymarket.presentation.theme.MyMarketTheme
 import ve.com.teeac.mymarket.utils.TestTags
 import javax.inject.Inject
 
+@ExperimentalComposeUiApi
 @ExperimentalCoroutinesApi
 @HiltAndroidTest
 @UninstallModules(AppModule::class)
@@ -57,7 +59,7 @@ class MarketsScreenKtTest {
                 ) {
                     composable(route = Screen.MarketsScreen.route) {
                         MarketsScreen(
-                            onClick = {
+                            showDetails = {
                                 marketIdCap = it
                             }
                         )

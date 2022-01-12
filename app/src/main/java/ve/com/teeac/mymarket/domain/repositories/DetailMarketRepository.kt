@@ -5,11 +5,13 @@ import ve.com.teeac.mymarket.domain.model.MarketDetail
 
 interface DetailMarketRepository {
 
-    fun getAllProducts(marketId: Int): Flow<List<MarketDetail>>
+    fun getAllProducts(marketId: Long): Flow<List<MarketDetail>>
 
-    suspend fun getProduct(id: Int): MarketDetail
+    suspend fun getProduct(id: Long): MarketDetail?
 
     suspend fun addProduct(product: MarketDetail)
 
-    suspend fun deleteProduct(product: MarketDetail)
+    suspend fun deleteProduct(id: Long)
+
+    suspend fun updateProductByRate(list: List<MarketDetail>)
 }

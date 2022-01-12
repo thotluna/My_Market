@@ -30,6 +30,7 @@ fun NumberField(
     readOnly: Boolean = false,
     textStyle: TextStyle = LocalTextStyle.current,
     visualTransformation: VisualTransformation = VisualTransformation.None,
+    keyboardOptions: KeyboardOptions =  KeyboardOptions(),
     keyboardActions: KeyboardActions = KeyboardActions(),
     singleLine: Boolean = false,
     maxLines: Int = Int.MAX_VALUE,
@@ -68,8 +69,9 @@ fun NumberField(
                 textAlign = TextAlign.End
             ),
             modifier = Modifier
-                .testTag(testTag),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                .testTag(testTag)
+                .fillMaxWidth(),
+            keyboardOptions = keyboardOptions.copy(keyboardType = KeyboardType.Number),
             keyboardActions = keyboardActions,
             singleLine = singleLine,
             maxLines = maxLines,

@@ -9,8 +9,10 @@ import dagger.hilt.components.SingletonComponent
 import ve.com.teeac.mymarket.data.data_source.AppDatabase
 import ve.com.teeac.mymarket.data.data_source.MarketDao
 import ve.com.teeac.mymarket.data.repositories.AmountsSetupRepositoryImp
+import ve.com.teeac.mymarket.data.repositories.DetailsMarketRepositoryImp
 import ve.com.teeac.mymarket.data.repositories.MarketsRepositoryImp
 import ve.com.teeac.mymarket.domain.repositories.AmountsSetupRepository
+import ve.com.teeac.mymarket.domain.repositories.DetailMarketRepository
 import ve.com.teeac.mymarket.domain.repositories.MarketsRepository
 import ve.com.teeac.mymarket.domain.usecases.*
 import javax.inject.Singleton
@@ -50,14 +52,26 @@ object TestAppModule {
 
     @Provides
     @Singleton
+    fun provideDetailMarketRepository(db: AppDatabase): DetailMarketRepository {
+        return DetailsMarketRepositoryImp(db.detailMarketDao)
+    }
+
+    @Provides
+    @Singleton
     fun providerDetailsMarketUseCases(
         repositoryAmount: AmountsSetupRepository,
-        repositoryMarkets: MarketsRepository
+        repositoryMarkets: MarketsRepository,
+        repositoryDetail: DetailMarketRepository
     ): DetailsMarketUseCase{
         return DetailsMarketUseCase(
             addAmountsSetup = AddAmountsSetup(repositoryAmount),
             getAmountsSetup = GetAmountsSetup(repositoryAmount),
-            addMarket = AddMarket(repositoryMarkets)
+            addMarket = AddMarket(repositoryMarkets),
+            addProduct = AddProduct(repositoryDetail),
+            getProduct = GetProduct(repositoryDetail),
+            updateProduct = UpdateProductsMarketUseCase(repositoryDetail),
+            getAllProducts =  GetAllProducts(repositoryDetail),
+            deleteProduct = DeleteProduct(repositoryDetail)
         )
     }
 }

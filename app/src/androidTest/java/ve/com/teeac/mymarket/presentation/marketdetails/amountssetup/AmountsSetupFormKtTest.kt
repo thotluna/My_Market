@@ -1,15 +1,12 @@
 package ve.com.teeac.mymarket.presentation.marketdetails.amountssetup
 
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.junit.Assert.*
 
 import org.junit.Before
 import org.junit.Rule
@@ -17,10 +14,8 @@ import org.junit.Test
 import ve.com.teeac.mymarket.di.AppModule
 import ve.com.teeac.mymarket.presentation.MainActivity
 import ve.com.teeac.mymarket.presentation.components.MyMarketApp
-import ve.com.teeac.mymarket.presentation.markets.MarketsScreen
-import ve.com.teeac.mymarket.presentation.navigation.Screen
-import ve.com.teeac.mymarket.presentation.theme.MyMarketTheme
 
+@ExperimentalComposeUiApi
 @ExperimentalCoroutinesApi
 @HiltAndroidTest
 @UninstallModules(AppModule::class)
@@ -29,12 +24,14 @@ class AmountsSetupFormKtTest {
     @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
 
+
     @get:Rule(order = 1)
     val composeRule = createAndroidComposeRule<MainActivity>()
 
     lateinit var controller: AmountSetupController
 
     val monto = "56258.23"
+
 
     @Before
     fun setUp() {
@@ -57,7 +54,9 @@ class AmountsSetupFormKtTest {
                        controller.onAmountsSetupEvent(
                            AmountSetupEvent.EnteredAmountsDollar(it)
                        )
-                   }
+                   },
+                   onToggleSetupSection = {},
+                   onSave = {}
                )
             }
         }

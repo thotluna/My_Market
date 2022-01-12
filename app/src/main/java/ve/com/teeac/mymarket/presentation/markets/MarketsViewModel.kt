@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MarketsViewModel @Inject constructor(
     private val useCase: MarketUseCases
-): ViewModel() {
+) : ViewModel() {
 
     private val _state = mutableStateOf(MarketsState())
     val state: State<MarketsState> = _state
@@ -33,19 +33,19 @@ class MarketsViewModel @Inject constructor(
         getMarkets()
     }
 
-    fun onEvent(event: MarketsEvent){
-        when(event){
-            is MarketsEvent.SaveMarket -> {
-                val market = Market()
+    fun onEvent(event: MarketsEvent) {
+        when (event) {
+            is MarketsEvent.NavigateMarket -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    val idMarket = useCase.addMarket(market)
-                    _eventFlow.emit(UiEvent.NavigateToDetails(idMarket))
+                    event.idMarket?.let {
+                        _eventFlow.emit(UiEvent.NavigateToDetails(it))
+                    }?: _eventFlow.emit(UiEvent.NavigateToDetails(-1))
                 }
             }
         }
     }
 
-    private fun getMarkets(){
+    private fun getMarkets() {
         getMarketsJob?.cancel()
         getMarketsJob = useCase.getMarkets()
             .onEach { markets ->

@@ -3,8 +3,14 @@ package ve.com.teeac.mymarket.presentation.marketdetails.amountssetup
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import ve.com.teeac.mymarket.domain.model.AmountsSetup
+import ve.com.teeac.mymarket.presentation.marketdetails.NumberTextFieldState
 
-class AmountSetupController {
+class AmountSetupController(
+    initialRate: Number? = null,
+    initialMaxBolivares: Number? = null,
+    initialMaxDollar: Number? = null,
+    private val id: Long? = null
+) {
 
     companion object {
         const val NAME_RATE = "Taza"
@@ -14,23 +20,28 @@ class AmountSetupController {
 
     private val _rate = mutableStateOf(
         NumberTextFieldState(
-        title = NAME_RATE
-    )
+            title = NAME_RATE,
+            number = initialRate
+        )
     )
     val rate: State<NumberTextFieldState> = _rate
 
     private val _maxBolivares = mutableStateOf(
         NumberTextFieldState(
-        title = NAME_BOLIVARES
-    )
+            title = NAME_BOLIVARES,
+            number = initialMaxBolivares
+        )
     )
     val maxBolivares: State<NumberTextFieldState> = _maxBolivares
 
     private val _maxDollar = mutableStateOf(
         NumberTextFieldState(
-        title = NAME_DOLLAR
+            title = NAME_DOLLAR,
+            number = initialMaxDollar
+        )
     )
-    )
+
+
     val maxDollar: State<NumberTextFieldState> = _maxDollar
 
     fun onAmountsSetupEvent(event: AmountSetupEvent) {
@@ -51,11 +62,12 @@ class AmountSetupController {
         }
     }
 
-    fun getAmountSetup(idMarket: Long): AmountsSetup{
+    fun getAmountSetup(idMarket: Long): AmountsSetup {
         return AmountsSetup(
-            rate = rate.value.number?.toDouble()?: 0.0,
-            maximumAvailable = maxBolivares.value.number?.toDouble()?: 0.0,
-            maximumAvailableDollar = maxDollar.value.number?.toDouble()?: 0.0,
+            id = id,
+            rate = rate.value.number?.toDouble() ?: 0.0,
+            maximumAvailable = maxBolivares.value.number?.toDouble() ?: 0.0,
+            maximumAvailableDollar = maxDollar.value.number?.toDouble() ?: 0.0,
             marketId = idMarket
         )
     }

@@ -8,11 +8,17 @@ import ve.com.teeac.mymarket.domain.model.MarketDetail
 interface DetailMarketDao {
 
     @Query("SELECT * FROM marketdetail WHERE marketId = :marketId")
-    fun getAllDetailMarket(marketId: Int): Flow<List<MarketDetail>>
+    fun getAllDetailMarket(marketId: Long): Flow<List<MarketDetail>>
+
+    @Query("SELECT * FROM marketdetail WHERE id = :id")
+    suspend fun getDetailMarket(id: Long): MarketDetail?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addDetailMarket(marketDetail: MarketDetail)
 
-    @Delete
-    suspend fun deleteDetailMarket(marketDetail: MarketDetail)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addListDetailMarket(list: List<MarketDetail>)
+
+    @Query("DELETE FROM marketdetail WHERE id = :id")
+    suspend fun deleteDetailMarket(id: Long)
 }

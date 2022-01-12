@@ -13,6 +13,6 @@ interface AmountsSetupDao {
     suspend fun insertAmounts(amounts: AmountsSetup)
 
     @Query("SELECT * FROM amountssetup WHERE marketId = :marketId")
-    suspend fun getAmountsSetup(marketId: Int): AmountsSetup
+    suspend fun getAmountsSetup(marketId: Long): AmountsSetup
 
 }

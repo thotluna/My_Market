@@ -11,7 +11,7 @@ class AmountsSetupRepositoryImp(
         dao.insertAmounts(amounts)
     }
 
-    override suspend fun getAmounts(marketId: Int): AmountsSetup {
+    override suspend fun getAmounts(marketId: Long): AmountsSetup? {
         return dao.getAmountsSetup(marketId)
     }
 }

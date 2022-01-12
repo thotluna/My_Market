@@ -5,12 +5,16 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -23,21 +27,21 @@ import ve.com.teeac.mymarket.utils.getDate
 @Composable
 fun MarketsScreen(
     viewModel: MarketsViewModel = hiltViewModel(),
-    onClick: (marketId: Long?) ->Unit,
+    showDetails: (marketId: Long) -> Unit,
 ) {
     val state = viewModel.state.value
     val scaffoldState = rememberScaffoldState()
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
-            when(event) {
+            when (event) {
                 is UiEvent.ShowSnackBar -> {
                     scaffoldState.snackbarHostState.showSnackbar(
                         message = event.message
                     )
                 }
                 is UiEvent.NavigateToDetails -> {
-                    onClick(event.marketId)
+                    showDetails(event.marketId)
                 }
             }
         }
@@ -46,17 +50,25 @@ fun MarketsScreen(
     Scaffold(
         topBar = { TopBar() },
         floatingActionButton = {
-            FloatingButton(
-                onNew = {
-                    viewModel.onEvent(MarketsEvent.SaveMarket)
-                }
-            )},
+            FloatingActionButton(
+                onClick = { showDetails(-1) }, //viewModel.onEvent(MarketsEvent.NavigateMarket())
+                backgroundColor = MaterialTheme.colors.primary
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(R.string.add_market)
+                )
+            }
+        },
         scaffoldState = scaffoldState
-    ) {
+    ) { paddingValues ->
         Box(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier
+                .padding(paddingValues)
+                .padding(16.dp)
+                .semantics { contentDescription = "Market Screen" }
         ) {
-            if(state.markets.isNotEmpty()){
+            if (state.markets.isNotEmpty()) {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
@@ -65,11 +77,13 @@ fun MarketsScreen(
                     items(state.markets) { market ->
                         ItemMarkets(
                             item = market,
-                            onClick = { onClick(it) }
+                            onClick = {
+                                showDetails(it)
+                            }
                         )
                     }
                 }
-            }else{
+            } else {
                 Text(text = stringResource(R.string.markets_empty))
             }
         }
@@ -77,21 +91,21 @@ fun MarketsScreen(
 }
 
 @Composable
-fun ItemMarkets(item: Market, modifier: Modifier = Modifier, onClick: (id:Long?)-> Unit) {
+fun ItemMarkets(item: Market, modifier: Modifier = Modifier, onClick: (id: Long) -> Unit) {
     Card(
         modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .clickable{onClick(item.id)}
+            .clickable { onClick(item.id!!) }
             .testTag(item.id.toString())
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 16.dp, horizontal = 8.dp),
-            verticalAlignment = Alignment.CenterVertically ,
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
-        ){
+        ) {
             Text(
                 text = getDate(item.date)
             )
@@ -113,11 +127,10 @@ fun ItemMarkets(item: Market, modifier: Modifier = Modifier, onClick: (id:Long?)
 }
 
 
-
 //@Preview(showBackground = true, widthDp = 350)
 @Composable
 private fun TopBar() {
-    TopAppBar{
+    TopAppBar {
         Text(text = stringResource(R.string.title_app), Modifier.padding(vertical = 8.dp))
     }
 }

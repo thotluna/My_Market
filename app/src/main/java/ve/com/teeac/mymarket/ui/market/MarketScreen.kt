@@ -29,7 +29,7 @@ fun MarketScreen() {
     }
 }
 
-fun getDetail() = (1..50).map {
+fun getDetail() = (1L..50).map {
     val converter = 5.2
     val quantity = it / 3.00
     MarketDetail(
