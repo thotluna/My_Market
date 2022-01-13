@@ -11,10 +11,12 @@ import ve.com.teeac.mymarket.data.data_source.MarketDao
 import ve.com.teeac.mymarket.data.repositories.AmountsSetupRepositoryImp
 import ve.com.teeac.mymarket.data.repositories.DetailsMarketRepositoryImp
 import ve.com.teeac.mymarket.data.repositories.MarketsRepositoryImp
+import ve.com.teeac.mymarket.domain.model.AmountsSetup
 import ve.com.teeac.mymarket.domain.repositories.AmountsSetupRepository
 import ve.com.teeac.mymarket.domain.repositories.DetailMarketRepository
 import ve.com.teeac.mymarket.domain.repositories.MarketsRepository
 import ve.com.teeac.mymarket.domain.usecases.*
+import ve.com.teeac.mymarket.presentation.marketdetails.amountssetup.SetupController
 import javax.inject.Singleton
 
 @Module
@@ -54,6 +56,23 @@ object TestAppModule {
     @Singleton
     fun provideDetailMarketRepository(db: AppDatabase): DetailMarketRepository {
         return DetailsMarketRepositoryImp(db.detailMarketDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSetupUseCase(repository: AmountsSetupRepository): SetupUseCase {
+        return SetupUseCase(
+            addSetup = AddAmountsSetup(repository),
+            getSetup = GetAmountsSetup(repository)
+        )
+    }
+
+    @Provides
+    fun providerSetupController(useCase: SetupUseCase): SetupController {
+        return SetupController(
+            valueInitial = AmountsSetup(),
+            useCase = useCase
+        )
     }
 
     @Provides

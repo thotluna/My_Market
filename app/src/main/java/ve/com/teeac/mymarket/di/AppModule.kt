@@ -12,9 +12,11 @@ import ve.com.teeac.mymarket.data.data_source.MarketDao
 import ve.com.teeac.mymarket.data.repositories.AmountsSetupRepositoryImp
 import ve.com.teeac.mymarket.data.repositories.DetailsMarketRepositoryImp
 import ve.com.teeac.mymarket.data.repositories.MarketsRepositoryImp
+import ve.com.teeac.mymarket.domain.model.AmountsSetup
 import ve.com.teeac.mymarket.domain.repositories.AmountsSetupRepository
 import ve.com.teeac.mymarket.domain.repositories.DetailMarketRepository
 import ve.com.teeac.mymarket.domain.usecases.*
+import ve.com.teeac.mymarket.presentation.marketdetails.amountssetup.SetupController
 import javax.inject.Singleton
 
 @Module
@@ -33,13 +35,13 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideMarketRepository(db: AppDatabase): MarketsRepository{
+    fun provideMarketRepository(db: AppDatabase): MarketsRepository {
         return MarketsRepositoryImp(db.marketDao)
     }
 
     @Provides
     @Singleton
-    fun provideAmountSetupRepository(db: AppDatabase): AmountsSetupRepository{
+    fun provideAmountSetupRepository(db: AppDatabase): AmountsSetupRepository {
         return AmountsSetupRepositoryImp(db.amountsSetupDao)
     }
 
@@ -51,10 +53,27 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideMarketUseCases(repository: MarketsRepository): MarketUseCases{
+    fun provideMarketUseCases(repository: MarketsRepository): MarketUseCases {
         return MarketUseCases(
             addMarket = AddMarket(repository),
             getMarkets = GetMarkets(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSetupUseCase(repository: AmountsSetupRepository): SetupUseCase {
+        return SetupUseCase(
+            addSetup = AddAmountsSetup(repository),
+            getSetup = GetAmountsSetup(repository)
+        )
+    }
+
+    @Provides
+    fun providerSetupController(useCase: SetupUseCase): SetupController{
+        return SetupController(
+            valueInitial = AmountsSetup(),
+            useCase = useCase
         )
     }
 
@@ -64,7 +83,7 @@ object AppModule {
         repositoryAmount: AmountsSetupRepository,
         repositoryMarkets: MarketsRepository,
         repositoryDetail: DetailMarketRepository
-    ): DetailsMarketUseCase{
+    ): DetailsMarketUseCase {
         return DetailsMarketUseCase(
             addAmountsSetup = AddAmountsSetup(repositoryAmount),
             getAmountsSetup = GetAmountsSetup(repositoryAmount),
@@ -72,7 +91,7 @@ object AppModule {
             addProduct = AddProduct(repositoryDetail),
             getProduct = GetProduct(repositoryDetail),
             updateProduct = UpdateProductsMarketUseCase(repositoryDetail),
-            getAllProducts =  GetAllProducts(repositoryDetail),
+            getAllProducts = GetAllProducts(repositoryDetail),
             deleteProduct = DeleteProduct(repositoryDetail)
         )
     }

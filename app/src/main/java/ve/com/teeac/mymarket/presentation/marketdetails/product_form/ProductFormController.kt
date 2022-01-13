@@ -9,6 +9,7 @@ import ve.com.teeac.mymarket.presentation.marketdetails.NumberTextFieldState
 class ProductFormController {
 
     private val _rate = mutableStateOf<Number>(0)
+    val rate: State<Number?> = _rate
 
     private val _id = mutableStateOf<Long?>(null)
     val id: State<Long?> = _id

@@ -10,12 +10,12 @@ data class AmountSetupState (
 )
 
 sealed class AmountSetupEvent{
-    data class EnteredConvert(val value: Number?): AmountSetupEvent()
-    data class ChangeConvert(val focusState: FocusState): AmountSetupEvent()
-    data class EnteredAmounts(val value: Number?): AmountSetupEvent()
-    data class ChangeAmountBs(val focusState: FocusState): AmountSetupEvent()
-    data class EnteredAmountsDollar(val value: Number?): AmountSetupEvent()
-    data class ChangeAmountDollar(val focusState: FocusState): AmountSetupEvent()
+    data class EnteredRate(val value: Number?): AmountSetupEvent()
+    data class EnteredMaxBolivares(val value: Number?): AmountSetupEvent()
+    data class EnteredMaxDollar(val value: Number?): AmountSetupEvent()
+
+    data class Save(val idMarket: Long): AmountSetupEvent()
+    data class LoadSetup(val idMarket: Long): AmountSetupEvent()
 }
 
 

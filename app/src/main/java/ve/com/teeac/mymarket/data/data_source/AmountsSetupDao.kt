@@ -10,7 +10,7 @@ import ve.com.teeac.mymarket.domain.model.AmountsSetup
 interface AmountsSetupDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAmounts(amounts: AmountsSetup)
+    suspend fun insertAmounts(amounts: AmountsSetup): Long
 
     @Query("SELECT * FROM amountssetup WHERE marketId = :marketId")
     suspend fun getAmountsSetup(marketId: Long): AmountsSetup

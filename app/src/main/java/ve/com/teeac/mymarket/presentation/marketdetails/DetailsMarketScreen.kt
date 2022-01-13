@@ -30,7 +30,7 @@ import ve.com.teeac.mymarket.presentation.marketdetails.amountssetup.AmountSetup
 import ve.com.teeac.mymarket.presentation.marketdetails.product_form.ProductEvent
 import ve.com.teeac.mymarket.presentation.marketdetails.product_form.ProductForm
 
-@OptIn(ExperimentalMaterialApi::class)
+@ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
 fun DetailsMarketScreen(
@@ -126,21 +126,21 @@ fun DetailsMarketScreen(
                         converterState,
                         onChange = {
                             viewModel.setupController
-                                .onAmountsSetupEvent(AmountSetupEvent.EnteredConvert(it))
+                                .onEvent(AmountSetupEvent.EnteredRate(it))
                         }
                     ),
                     amountState = AmountSetupState(
                         field = amountState,
                         onChange = {
                             viewModel.setupController
-                                .onAmountsSetupEvent(AmountSetupEvent.EnteredAmounts(it))
+                                .onEvent(AmountSetupEvent.EnteredMaxBolivares(it))
                         }
                     ),
                     amountsDollarState = AmountSetupState(
                         field = amountsDollarState,
                         onChange = {
                             viewModel.setupController
-                                .onAmountsSetupEvent(AmountSetupEvent.EnteredAmountsDollar(it))
+                                .onEvent(AmountSetupEvent.EnteredMaxDollar(it))
                         }
                     ),
                     onToggleSetupSection = { viewModel.onToggleSetupSection() },

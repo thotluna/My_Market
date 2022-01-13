@@ -12,8 +12,11 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import ve.com.teeac.mymarket.di.AppModule
+import ve.com.teeac.mymarket.domain.model.AmountsSetup
+import ve.com.teeac.mymarket.domain.usecases.SetupUseCase
 import ve.com.teeac.mymarket.presentation.MainActivity
 import ve.com.teeac.mymarket.presentation.components.MyMarketApp
+import javax.inject.Inject
 
 @ExperimentalComposeUiApi
 @ExperimentalCoroutinesApi
@@ -28,7 +31,10 @@ class AmountsSetupFormKtTest {
     @get:Rule(order = 1)
     val composeRule = createAndroidComposeRule<MainActivity>()
 
-    lateinit var controller: AmountSetupController
+    @Inject
+    lateinit var useCase: SetupUseCase
+
+    lateinit var controller: SetupController
 
     val monto = "56258.23"
 
@@ -36,23 +42,23 @@ class AmountsSetupFormKtTest {
     @Before
     fun setUp() {
         hiltRule.inject()
-        controller = AmountSetupController()
+        controller = SetupController(valueInitial = AmountsSetup(), useCase = useCase)
         composeRule.setContent {
             MyMarketApp {
                AmountSetupForm(
                    converterState = AmountSetupState(controller.rate.value) {
-                       controller.onAmountsSetupEvent(
-                           AmountSetupEvent.EnteredConvert(it)
+                       controller.onEvent(
+                           AmountSetupEvent.EnteredRate(it)
                        )
                    },
                    amountState =AmountSetupState(controller.maxBolivares.value) {
-                       controller.onAmountsSetupEvent(
-                           AmountSetupEvent.EnteredAmounts(it)
+                       controller.onEvent(
+                           AmountSetupEvent.EnteredMaxBolivares(it)
                        )
                    },
                    amountsDollarState =AmountSetupState(controller.maxDollar.value) {
-                       controller.onAmountsSetupEvent(
-                           AmountSetupEvent.EnteredAmountsDollar(it)
+                       controller.onEvent(
+                           AmountSetupEvent.EnteredMaxDollar(it)
                        )
                    },
                    onToggleSetupSection = {},
@@ -64,41 +70,41 @@ class AmountsSetupFormKtTest {
 
     @Test
     fun initialComponent(){
-        composeRule.onNodeWithText(AmountSetupController.NAME_RATE).assertIsDisplayed()
-        composeRule.onNodeWithText(AmountSetupController.NAME_DOLLAR).assertIsDisplayed()
-        composeRule.onNodeWithText(AmountSetupController.NAME_BOLIVARES).assertIsDisplayed()
+        composeRule.onNodeWithText(SetupController.NAME_RATE).assertIsDisplayed()
+        composeRule.onNodeWithText(SetupController.NAME_DOLLAR).assertIsDisplayed()
+        composeRule.onNodeWithText(SetupController.NAME_BOLIVARES).assertIsDisplayed()
     }
 
     @Test
     fun loadDataInRate(){
-        composeRule.onNodeWithText(AmountSetupController.NAME_RATE)
+        composeRule.onNodeWithText(SetupController.NAME_RATE)
             .assertIsDisplayed()
             .performTextInput(monto)
         composeRule.onNodeWithText(monto).assertIsDisplayed()
 
-        composeRule.onNodeWithTag("Tag_Field_${AmountSetupController.NAME_RATE}").performTextClearance()
+        composeRule.onNodeWithTag("Tag_Field_${SetupController.NAME_RATE}").performTextClearance()
         composeRule.onNodeWithText(monto).assertDoesNotExist()
     }
 
     @Test
     fun loadDataInBs(){
-        composeRule.onNodeWithText(AmountSetupController.NAME_BOLIVARES)
+        composeRule.onNodeWithText(SetupController.NAME_BOLIVARES)
             .assertIsDisplayed()
             .performTextInput(monto)
         composeRule.onNodeWithText(monto).assertIsDisplayed()
 
-        composeRule.onNodeWithTag("Tag_Field_${AmountSetupController.NAME_BOLIVARES}").performTextClearance()
+        composeRule.onNodeWithTag("Tag_Field_${SetupController.NAME_BOLIVARES}").performTextClearance()
         composeRule.onNodeWithText(monto).assertDoesNotExist()
     }
 
     @Test
     fun loadDataInDollar(){
-        composeRule.onNodeWithText(AmountSetupController.NAME_DOLLAR)
+        composeRule.onNodeWithText(SetupController.NAME_DOLLAR)
             .assertIsDisplayed()
             .performTextInput(monto)
         composeRule.onNodeWithText(monto).assertIsDisplayed()
 
-        composeRule.onNodeWithTag("Tag_Field_${AmountSetupController.NAME_DOLLAR}").performTextClearance()
+        composeRule.onNodeWithTag("Tag_Field_${SetupController.NAME_DOLLAR}").performTextClearance()
         composeRule.onNodeWithText(monto).assertDoesNotExist()
     }
 }

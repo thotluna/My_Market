@@ -7,8 +7,8 @@ import ve.com.teeac.mymarket.domain.repositories.AmountsSetupRepository
 class AmountsSetupRepositoryImp(
     private val dao: AmountsSetupDao
 ) : AmountsSetupRepository{
-    override suspend fun addAmounts(amounts: AmountsSetup) {
-        dao.insertAmounts(amounts)
+    override suspend fun addAmounts(amounts: AmountsSetup): Long {
+        return dao.insertAmounts(amounts)
     }
 
     override suspend fun getAmounts(marketId: Long): AmountsSetup? {

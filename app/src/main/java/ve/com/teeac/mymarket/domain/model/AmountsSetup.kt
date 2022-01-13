@@ -8,6 +8,6 @@ data class AmountsSetup(
     val rate: Double = 0.00,
     val maximumAvailableDollar: Double = 0.00,
     val maximumAvailable: Double = 0.00,
-    @PrimaryKey val id: Long? = null,
-    val marketId: Long? = null,
+    @PrimaryKey var id: Long? = null,
+    var marketId: Long? = null,
 )
