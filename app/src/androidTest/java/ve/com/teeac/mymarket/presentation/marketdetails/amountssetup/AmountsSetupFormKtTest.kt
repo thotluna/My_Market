@@ -1,5 +1,7 @@
 package ve.com.teeac.mymarket.presentation.marketdetails.amountssetup
 
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -7,22 +9,28 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
 
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import ve.com.teeac.mymarket.di.AppModule
 import ve.com.teeac.mymarket.domain.model.AmountsSetup
-import ve.com.teeac.mymarket.domain.usecases.SetupUseCase
+import ve.com.teeac.mymarket.domain.usecases.setup_use_cases.SetupUseCase
 import ve.com.teeac.mymarket.presentation.MainActivity
 import ve.com.teeac.mymarket.presentation.components.MyMarketApp
+import ve.com.teeac.mymarket.utils.TestTags
 import javax.inject.Inject
 
+@ExperimentalMaterialApi
+@ExperimentalAnimationApi
 @ExperimentalComposeUiApi
 @ExperimentalCoroutinesApi
 @HiltAndroidTest
 @UninstallModules(AppModule::class)
 class AmountsSetupFormKtTest {
+
+    private val standardTestDispatcher = StandardTestDispatcher()
 
     @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
@@ -34,15 +42,20 @@ class AmountsSetupFormKtTest {
     @Inject
     lateinit var useCase: SetupUseCase
 
-    lateinit var controller: SetupController
+    private lateinit var controller: SetupController
 
-    val monto = "56258.23"
+    private val amount = "56258.23"
 
 
     @Before
     fun setUp() {
         hiltRule.inject()
-        controller = SetupController(valueInitial = AmountsSetup(), useCase = useCase)
+        controller = SetupController(
+            valueInitial = AmountsSetup(),
+            useCase = useCase,
+            dispatcher = standardTestDispatcher,
+            dispatcherIo = standardTestDispatcher
+        )
         composeRule.setContent {
             MyMarketApp {
                AmountSetupForm(
@@ -61,7 +74,6 @@ class AmountsSetupFormKtTest {
                            AmountSetupEvent.EnteredMaxDollar(it)
                        )
                    },
-                   onToggleSetupSection = {},
                    onSave = {}
                )
             }
@@ -69,42 +81,37 @@ class AmountsSetupFormKtTest {
     }
 
     @Test
-    fun initialComponent(){
-        composeRule.onNodeWithText(SetupController.NAME_RATE).assertIsDisplayed()
-        composeRule.onNodeWithText(SetupController.NAME_DOLLAR).assertIsDisplayed()
-        composeRule.onNodeWithText(SetupController.NAME_BOLIVARES).assertIsDisplayed()
+    fun initialCompose(){
+        composeRule.onNodeWithContentDescription("AmountSetupForm").assertIsDisplayed()
+        composeRule.onNodeWithText("Taza").assertIsDisplayed()
+        composeRule.onNodeWithText("Bs").assertIsDisplayed()
+        composeRule.onNodeWithText("$").assertIsDisplayed()
+        composeRule.onNodeWithContentDescription("Guardar setup").assertIsDisplayed()
     }
 
     @Test
-    fun loadDataInRate(){
-        composeRule.onNodeWithText(SetupController.NAME_RATE)
-            .assertIsDisplayed()
-            .performTextInput(monto)
-        composeRule.onNodeWithText(monto).assertIsDisplayed()
+    fun fillFormWithoutBolivares(){
+        composeRule.onNodeWithTag(TestTags.RATE_FIELD).performTextInput("5")
+        composeRule.onNodeWithTag(TestTags.RATE_FIELD).performImeAction()
+        composeRule.onNodeWithTag(TestTags.MAX_BOLIVARES).assertIsFocused()
+        composeRule.onNodeWithTag(TestTags.MAX_BOLIVARES).performTextInput("5")
 
-        composeRule.onNodeWithTag("Tag_Field_${SetupController.NAME_RATE}").performTextClearance()
-        composeRule.onNodeWithText(monto).assertDoesNotExist()
+        composeRule.onNodeWithTag(TestTags.MAX_DOLLAR).assert(hasText("1"))
+        composeRule.onNodeWithTag(TestTags.MAX_BOLIVARES).assert(hasText("5"))
+        composeRule.onNodeWithTag(TestTags.RATE_FIELD).assert(hasText("5"))
     }
 
     @Test
-    fun loadDataInBs(){
-        composeRule.onNodeWithText(SetupController.NAME_BOLIVARES)
-            .assertIsDisplayed()
-            .performTextInput(monto)
-        composeRule.onNodeWithText(monto).assertIsDisplayed()
+    fun fillFormWithoutDollar(){
+        composeRule.onNodeWithTag(TestTags.RATE_FIELD).performTextInput("5")
+        composeRule.onNodeWithTag(TestTags.RATE_FIELD).performImeAction()
+        composeRule.onNodeWithTag(TestTags.MAX_BOLIVARES).assertIsFocused()
+        composeRule.onNodeWithTag(TestTags.MAX_BOLIVARES).performImeAction()
+        composeRule.onNodeWithTag(TestTags.MAX_DOLLAR).assertIsFocused()
+        composeRule.onNodeWithTag(TestTags.MAX_DOLLAR).performTextInput("5")
 
-        composeRule.onNodeWithTag("Tag_Field_${SetupController.NAME_BOLIVARES}").performTextClearance()
-        composeRule.onNodeWithText(monto).assertDoesNotExist()
-    }
-
-    @Test
-    fun loadDataInDollar(){
-        composeRule.onNodeWithText(SetupController.NAME_DOLLAR)
-            .assertIsDisplayed()
-            .performTextInput(monto)
-        composeRule.onNodeWithText(monto).assertIsDisplayed()
-
-        composeRule.onNodeWithTag("Tag_Field_${SetupController.NAME_DOLLAR}").performTextClearance()
-        composeRule.onNodeWithText(monto).assertDoesNotExist()
+        composeRule.onNodeWithTag(TestTags.RATE_FIELD).assert(hasText("5"))
+        composeRule.onNodeWithTag(TestTags.MAX_BOLIVARES).assert(hasText("25"))
+        composeRule.onNodeWithTag(TestTags.MAX_DOLLAR).assert(hasText("5"))
     }
 }

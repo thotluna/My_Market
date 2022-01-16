@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 data class AmountsSetup(
     val rate: Double = 0.00,
     val maximumAvailableDollar: Double = 0.00,
-    val maximumAvailable: Double = 0.00,
+    val maximumAvailableBolivares: Double = 0.00,
     @PrimaryKey var id: Long? = null,
     var marketId: Long? = null,
 )

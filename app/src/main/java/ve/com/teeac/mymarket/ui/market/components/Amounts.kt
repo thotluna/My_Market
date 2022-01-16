@@ -28,7 +28,7 @@ fun Amounts(value: AmountsSetup) {
                 value.rate
             )
             )
-            if(value.maximumAvailable != 0.0 ||
+            if(value.maximumAvailableBolivares != 0.0 ||
                 value.maximumAvailableDollar != 0.0){
                 Text(text = "Max. Disponible")
                 Text(text = stringResource(
@@ -38,7 +38,7 @@ fun Amounts(value: AmountsSetup) {
                 )
                 Text(text = stringResource(
                     id = R.string.string_bs,
-                    value.maximumAvailable
+                    value.maximumAvailableBolivares
                 )
                 )
             }

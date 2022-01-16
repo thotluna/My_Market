@@ -1,16 +1,44 @@
 package ve.com.teeac.mymarket.presentation.marketdetails.product_form
 
 import com.google.common.truth.Truth.assertThat
+import io.mockk.*
+import io.mockk.impl.annotations.MockK
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.Before
 import org.junit.Test
 import ve.com.teeac.mymarket.domain.model.MarketDetail
+import ve.com.teeac.mymarket.domain.usecases.product_use_cases.*
 
+@ExperimentalCoroutinesApi
 class ProductFormControllerTest {
 
-    private lateinit var controller: ProductFormController
-    private lateinit var controllerFull: ProductFormController
+    private val standardTestDispatcher = StandardTestDispatcher()
 
-    val product = MarketDetail(
+    @MockK
+    lateinit var addProduct: AddProduct
+
+    @MockK
+    lateinit var getAllProducts: GetAllProducts
+
+    @MockK
+    lateinit var getProduct: GetProduct
+
+    @MockK
+    lateinit var deleteProduct: DeleteProduct
+
+    @MockK
+    lateinit var updateProducts: UpdateProductByRate
+
+    lateinit var useCase: ProductUseCase
+    private lateinit var controller: ProductFormController
+
+
+    private val product = MarketDetail(
         id = 1L,
         marketId = 1L,
         quantity = 1.0,
@@ -19,13 +47,23 @@ class ProductFormControllerTest {
         amount = 50.0
     )
 
-    val number: Number = 5
+    private val number: Number = 5
 
     @Before
     fun setUp() {
-        controller = ProductFormController()
+        Dispatchers.setMain(StandardTestDispatcher())
+        MockKAnnotations.init(this, relaxUnitFun = true)
 
-        controllerFull = ProductFormController()
+        useCase = ProductUseCase(
+            addProduct = addProduct,
+            getAllProducts = getAllProducts,
+            getProduct = getProduct,
+            deleteProduct = deleteProduct,
+            updateProducts = updateProducts
+        )
+
+        controller = ProductFormController(useCase, standardTestDispatcher, Dispatchers.IO)
+
     }
 
     @Test
@@ -37,67 +75,91 @@ class ProductFormControllerTest {
     }
 
     @Test
-    fun loadProductExist(){
-        controller.onEvent(ProductEvent.UpdateProduct(product))
+    fun loadProductExist() {
+        coEvery { useCase.getProduct(any()) } coAnswers { product }
 
-        val equalProduct = controller.getMarketDetail(product.marketId)
+        runTest {
+            controller.loadProduct(product.id!!)
+        }
 
-        assertThat(equalProduct).isEqualTo(product)
+        assertThat(controller.quantity.value.number).isEqualTo(product.quantity)
+        assertThat(controller.description.value.text).isEqualTo(product.description)
+        assertThat(controller.amountBs.value.number).isEqualTo(product.unitAmount)
+        assertThat(controller.amountDollar.value.number).isEqualTo(product.unitAmountDollar)
+
+        coVerify(exactly = 1) { useCase.getProduct(product.marketId) }
+        confirmVerified(useCase.getProduct)
     }
 
     @Test
-    fun createNewProduct(){
+    fun createNewProductWithoutRate() = runTest {
+
+        coEvery { useCase.addProduct(any()) } coAnswers { product.id }
+
         controller.onEvent(ProductEvent.EnteredQuantity(product.quantity))
         controller.onEvent(ProductEvent.EnteredDescription(product.description))
         controller.onEvent(ProductEvent.EnteredAmountBs(product.unitAmount))
 
-        assertThat(controller.getMarketDetail(product.marketId)).isEqualTo(
-            product.copy(id = null)
-        )
+        controller.saveProduct(product.marketId)
+
+        coVerify(exactly = 1) { useCase.addProduct(product.copy(id = null)) }
+        confirmVerified(useCase.addProduct)
     }
 
     @Test
-    fun createNewProductBsWithRate(){
-        setRate(number)
-        controller.onEvent(ProductEvent.EnteredQuantity(product.quantity))
-        controller.onEvent(ProductEvent.EnteredDescription(product.description))
-        controller.onEvent(ProductEvent.EnteredAmountBs(product.unitAmount))
-
-        assertThat(controller.getMarketDetail(product.marketId)).isEqualTo(
-            product.copy(
-                id = null,
-                unitAmountDollar = product.unitAmount / number.toDouble(),
-                amountDollar = (product.unitAmount / number.toDouble()) * product.quantity,
-            )
+    fun `validate auto modify amountDollar and unitAmountDollar`() = runTest {
+        val rate = 3
+        val expected = product.copy(
+            id = null,
+            unitAmountDollar = Math.round((product.unitAmount / rate) * 1000.0) / 1000.0,
+            amountDollar =  (Math.round(((product.unitAmount / rate)) * 1000.0) / 1000.0) * product.quantity
         )
+        val sendProduct = slot<MarketDetail>()
+        coEvery { useCase.addProduct(capture(sendProduct)) } coAnswers { product.id }
+        setRate(rate)
+        delay(500L)
+        controller.onEvent(ProductEvent.EnteredQuantity(expected.quantity))
+        controller.onEvent(ProductEvent.EnteredDescription(expected.description))
+        controller.onEvent(ProductEvent.EnteredAmountBs(expected.unitAmount))
+
+        controller.saveProduct(expected.marketId)
+
+        assertThat(sendProduct.captured).isEqualTo(expected)
+
+        coVerify(exactly = 1) { useCase.addProduct(expected) }
+        confirmVerified(useCase.addProduct)
+
     }
 
     @Test
-    fun createNewProductDollarWithRate(){
-        val product = MarketDetail(
-            id = 1L,
-            marketId = 1L,
-            quantity = 1.0,
-            description = "Cosa",
-            unitAmountDollar = 50.0,
-            amountDollar = 50.0
+    fun `validate auto modify amount and unitAmount`() = runTest {
+        val rate = 6
+        val expected = product.copy(
+            id = null,
+            unitAmountDollar = 100.0,
+            amountDollar = 100.0,
+            unitAmount = 100.0 * rate,
+            amount = 100.0 * rate
         )
-        setRate(number)
-        controller.onEvent(ProductEvent.EnteredQuantity(product.quantity))
-        controller.onEvent(ProductEvent.EnteredDescription(product.description))
-        controller.onEvent(ProductEvent.EnteredAmountDollar(product.unitAmountDollar))
+        setRate(rate)
+        val sendProduct = slot<MarketDetail>()
+        coEvery { useCase.addProduct(capture(sendProduct)) } coAnswers { product.id }
+        delay(500L)
+        controller.onEvent(ProductEvent.EnteredQuantity(expected.quantity))
+        controller.onEvent(ProductEvent.EnteredDescription(expected.description))
+        controller.onEvent(ProductEvent.EnteredAmountDollar(expected.unitAmountDollar))
 
-        assertThat(controller.getMarketDetail(product.marketId)).isEqualTo(
-            product.copy(
-                id = null,
-                unitAmount = product.unitAmountDollar * number.toDouble(),
-                amount = (product.unitAmountDollar * number.toDouble()) * product.quantity,
-            )
-        )
+        controller.saveProduct(expected.marketId)
+
+        assertThat(sendProduct.captured).isEqualTo(expected)
+
+        coVerify(exactly = 1) { useCase.addProduct(expected) }
+        confirmVerified(useCase.addProduct)
+
     }
 
     @Test
-    fun clearedForm(){
+    fun clearedForm() {
         val product = MarketDetail(
             id = 1L,
             marketId = 1L,
@@ -126,11 +188,30 @@ class ProductFormControllerTest {
         assertThat(controller.amountDollar.value.number).isNull()
     }
 
+    @Test
+    fun `Modify all product with idMarket by rate`() = runTest {
 
-    private fun setRate(number: Number){
-        controller.onEvent(ProductEvent.UpdateRate(number))
+        val rate = 2.0
+
+        coEvery { useCase.updateProducts(rate, product.marketId) } returns Unit
+
+        controller.loadIdMarket(product.marketId)
+
+        controller.onEvent(ProductEvent.UpdateRate(rate))
+
+        delay(100L)
+
+        coVerify { useCase.updateProducts(rate, product.marketId) }
+
+        confirmVerified(useCase.updateProducts)
     }
 
+
+    private fun setRate(number: Number) {
+        coEvery { useCase.updateProducts(any(), any()) } returns Unit
+        controller.loadIdMarket(product.marketId)
+        controller.onEvent(ProductEvent.UpdateRate(number))
+    }
 
 
 }

@@ -18,6 +18,8 @@ import androidx.compose.ui.focus.focusOrder
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -48,6 +50,7 @@ fun ProductForm(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
+            .semantics { contentDescription = "ProductForm" },
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
 
@@ -118,6 +121,7 @@ fun ProductForm(
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(
                         onDone = {
+                            focusManager.moveFocus(FocusDirection.Down)
                             keyboardController?.hide()
                             onSave()
                         }),

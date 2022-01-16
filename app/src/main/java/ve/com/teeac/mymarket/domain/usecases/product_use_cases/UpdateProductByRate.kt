@@ -1,9 +1,9 @@
-package ve.com.teeac.mymarket.domain.usecases
+package ve.com.teeac.mymarket.domain.usecases.product_use_cases
 
 import kotlinx.coroutines.flow.first
 import ve.com.teeac.mymarket.domain.repositories.DetailMarketRepository
 
-class UpdateProductsMarketUseCase(
+class UpdateProductByRate(
     private val repository: DetailMarketRepository
 ) {
     suspend operator fun invoke(rate: Double, marketId: Long) {

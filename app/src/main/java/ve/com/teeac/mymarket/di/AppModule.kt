@@ -6,9 +6,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.Dispatchers
 import ve.com.teeac.mymarket.domain.repositories.MarketsRepository
 import ve.com.teeac.mymarket.data.data_source.AppDatabase
-import ve.com.teeac.mymarket.data.data_source.MarketDao
 import ve.com.teeac.mymarket.data.repositories.AmountsSetupRepositoryImp
 import ve.com.teeac.mymarket.data.repositories.DetailsMarketRepositoryImp
 import ve.com.teeac.mymarket.data.repositories.MarketsRepositoryImp
@@ -16,7 +16,12 @@ import ve.com.teeac.mymarket.domain.model.AmountsSetup
 import ve.com.teeac.mymarket.domain.repositories.AmountsSetupRepository
 import ve.com.teeac.mymarket.domain.repositories.DetailMarketRepository
 import ve.com.teeac.mymarket.domain.usecases.*
+import ve.com.teeac.mymarket.domain.usecases.product_use_cases.*
+import ve.com.teeac.mymarket.domain.usecases.setup_use_cases.AddAmountsSetup
+import ve.com.teeac.mymarket.domain.usecases.setup_use_cases.GetAmountsSetup
+import ve.com.teeac.mymarket.domain.usecases.setup_use_cases.SetupUseCase
 import ve.com.teeac.mymarket.presentation.marketdetails.amountssetup.SetupController
+import ve.com.teeac.mymarket.presentation.marketdetails.product_form.ProductFormController
 import javax.inject.Singleton
 
 @Module
@@ -70,10 +75,31 @@ object AppModule {
     }
 
     @Provides
+    @Singleton
+    fun providerProductUseCases(repository: DetailMarketRepository): ProductUseCase{
+        return ProductUseCase(
+            addProduct= AddProduct(repository),
+            getAllProducts= GetAllProducts(repository),
+            getProduct= GetProduct(repository),
+            deleteProduct= DeleteProduct(repository),
+            updateProducts= UpdateProductByRate(repository)
+        )
+    }
+
+    @Provides
     fun providerSetupController(useCase: SetupUseCase): SetupController{
         return SetupController(
             valueInitial = AmountsSetup(),
             useCase = useCase
+        )
+    }
+
+    @Provides
+    fun providerProductController(useCase: ProductUseCase): ProductFormController{
+        return ProductFormController(
+            useCase = useCase,
+            dispatcher = Dispatchers.Main,
+            dispatcherIo = Dispatchers.IO
         )
     }
 
@@ -90,7 +116,7 @@ object AppModule {
             addMarket = AddMarket(repositoryMarkets),
             addProduct = AddProduct(repositoryDetail),
             getProduct = GetProduct(repositoryDetail),
-            updateProduct = UpdateProductsMarketUseCase(repositoryDetail),
+            updateProduct = UpdateProductByRate(repositoryDetail),
             getAllProducts = GetAllProducts(repositoryDetail),
             deleteProduct = DeleteProduct(repositoryDetail)
         )

@@ -1,5 +1,7 @@
 package ve.com.teeac.mymarket.presentation.markets
 
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -26,6 +28,8 @@ import ve.com.teeac.mymarket.presentation.theme.MyMarketTheme
 import ve.com.teeac.mymarket.utils.TestTags
 import javax.inject.Inject
 
+@ExperimentalMaterialApi
+@ExperimentalAnimationApi
 @ExperimentalComposeUiApi
 @ExperimentalCoroutinesApi
 @HiltAndroidTest

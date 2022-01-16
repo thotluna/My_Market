@@ -1,5 +1,6 @@
 package ve.com.teeac.mymarket.presentation.marketdetails
 
+import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,16 +13,19 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.flow.collectLatest
 import ve.com.teeac.mymarket.R
 import ve.com.teeac.mymarket.domain.model.MarketDetail
 import ve.com.teeac.mymarket.presentation.marketdetails.amountssetup.AmountSetupEvent
@@ -29,7 +33,10 @@ import ve.com.teeac.mymarket.presentation.marketdetails.amountssetup.AmountSetup
 import ve.com.teeac.mymarket.presentation.marketdetails.amountssetup.AmountSetupState
 import ve.com.teeac.mymarket.presentation.marketdetails.product_form.ProductEvent
 import ve.com.teeac.mymarket.presentation.marketdetails.product_form.ProductForm
+import ve.com.teeac.mymarket.presentation.marketdetails.product_form.UiEvent
+import ve.com.teeac.mymarket.utils.TestTags
 
+@ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
@@ -48,6 +55,21 @@ fun DetailsMarketScreen(
     val description = viewModel.productController.description.value
     val amountDollar = viewModel.productController.amountDollar.value
     val amountBs = viewModel.productController.amountBs.value
+
+    val scaffoldState = rememberScaffoldState()
+
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event ->
+            when (event) {
+                is UiEvent.ShowSnackBar -> {
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = event.message
+                    )
+                }
+
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -76,8 +98,6 @@ fun DetailsMarketScreen(
                     Text(text = "Mercado ${viewModel.state.value.marketId}")
                 }
 
-
-
                 Row(
                     Modifier.fillMaxHeight(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -85,7 +105,7 @@ fun DetailsMarketScreen(
                 ) {
                     IconButton(
                         onClick = {
-                            viewModel.onToggleSetupSection()
+                            viewModel.setupController.onToggleSection()
                         },
                     ) {
                         Icon(
@@ -96,7 +116,7 @@ fun DetailsMarketScreen(
                     Spacer(modifier = Modifier.widthIn(4.dp))
                     IconButton(
                         onClick = {
-                            viewModel.onToggleProductSection()
+                            viewModel.productController.onToggleSection()
                             viewModel.onEvent(DetailsMarketEvent.ClearProductForm)
                         },
                     ) {
@@ -110,8 +130,9 @@ fun DetailsMarketScreen(
 
             }
 
-        }
-    ) {
+        },
+        scaffoldState = scaffoldState
+    ) { it ->
         Column(
             modifier = Modifier
                 .padding(it)
@@ -119,48 +140,55 @@ fun DetailsMarketScreen(
                 .fillMaxSize()
                 .semantics { contentDescription = "Detail Market Screen" }
         ) {
+            AnimatedVisibility(
+                visible = viewModel.setupController.isSectionVisible.value,
+                enter = fadeIn() + slideInVertically(),
+                exit = fadeOut() + slideOutVertically(),
 
-            if (viewModel.idSetupSectionVisible.value) {
+                ) {
                 AmountSetupForm(
                     converterState = AmountSetupState(
                         converterState,
-                        onChange = {
+                        onChange = { number ->
                             viewModel.setupController
-                                .onEvent(AmountSetupEvent.EnteredRate(it))
+                                .onEvent(AmountSetupEvent.EnteredRate(number))
                         }
                     ),
                     amountState = AmountSetupState(
                         field = amountState,
-                        onChange = {
+                        onChange = { number ->
                             viewModel.setupController
-                                .onEvent(AmountSetupEvent.EnteredMaxBolivares(it))
+                                .onEvent(AmountSetupEvent.EnteredMaxBolivares(number))
                         }
                     ),
                     amountsDollarState = AmountSetupState(
                         field = amountsDollarState,
-                        onChange = {
+                        onChange = { number ->
                             viewModel.setupController
-                                .onEvent(AmountSetupEvent.EnteredMaxDollar(it))
+                                .onEvent(AmountSetupEvent.EnteredMaxDollar(number))
                         }
                     ),
-                    onToggleSetupSection = { viewModel.onToggleSetupSection() },
                     onSave = { viewModel.onEvent(DetailsMarketEvent.SaveAmountSetup) }
                 )
                 Spacer(modifier = Modifier.widthIn(8.dp))
             }
-            if (viewModel.idProductSectionVisible.value) {
+            AnimatedVisibility(
+                visible = viewModel.productController.isSectionVisible.value,
+                enter = fadeIn() + slideInVertically(),
+                exit = fadeOut() + slideOutVertically()
+            ) {
                 ProductForm(
                     quantity = quantity,
-                    quantityChange = {
-                        viewModel.productController.onEvent(ProductEvent.EnteredQuantity(it))
+                    quantityChange = { number ->
+                        viewModel.productController.onEvent(ProductEvent.EnteredQuantity(number))
                     },
                     description = description,
-                    descriptionChange = {
-                        viewModel.productController.onEvent(ProductEvent.EnteredDescription(it))
+                    descriptionChange = { word ->
+                        viewModel.productController.onEvent(ProductEvent.EnteredDescription(word))
                     },
                     amountBs = amountBs,
-                    amountBsChange = {
-                        viewModel.productController.onEvent(ProductEvent.EnteredAmountBs(it))
+                    amountBsChange = { number ->
+                        viewModel.productController.onEvent(ProductEvent.EnteredAmountBs(number))
                     },
                     amountDollar = amountDollar,
                     amountDollarChange = {
@@ -174,16 +202,20 @@ fun DetailsMarketScreen(
                 )
                 Spacer(modifier = Modifier.widthIn(8.dp))
             }
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(state.list) { producto ->
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .testTag(TestTags.LIST_PRODUCT)
+            ) {
+                items(state.list) { product ->
 
                     SwipeToDismissProduct(
-                        id = producto.id!!,
-                        onDelete = {viewModel.onEvent(DetailsMarketEvent.DeleteProduct(it))}
-                    ){
+                        id = product.id!!,
+                        onDelete = { viewModel.onEvent(DetailsMarketEvent.DeleteProduct(it)) }
+                    ) {
                         ItemProduct(
-                            item = producto,
-                            onClick = {viewModel.onEvent(DetailsMarketEvent.UpdateProduct(it))}
+                            item = product,
+                            onClick = { viewModel.onEvent(DetailsMarketEvent.UpdateProduct(it)) }
                         )
                     }
                 }
@@ -205,9 +237,9 @@ fun SwipeToDismissProduct(
     content: @Composable () -> Unit
 ) {
 
-    val state= rememberDismissState(
+    val state = rememberDismissState(
         confirmStateChange = {
-            if (it==DismissValue.DismissedToStart){
+            if (it == DismissValue.DismissedToStart) {
                 onDelete(id)
             }
             true
@@ -218,7 +250,7 @@ fun SwipeToDismissProduct(
         state = state,
         background = { BackgroundDismiss(state) },
         dismissContent = { content() },
-        directions=setOf(DismissDirection.EndToStart)
+        directions = setOf(DismissDirection.EndToStart)
     )
     Divider()
 }

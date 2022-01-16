@@ -21,12 +21,15 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusOrder
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ve.com.teeac.mymarket.presentation.components.MyMarketApp
 import ve.com.teeac.mymarket.presentation.marketdetails.NumberTextFieldState
 import ve.com.teeac.mymarket.presentation.marketdetails.components.NumberField
+import ve.com.teeac.mymarket.utils.TestTags
 
 @ExperimentalComposeUiApi
 @Composable
@@ -34,7 +37,6 @@ fun AmountSetupForm(
     converterState: AmountSetupState,
     amountState: AmountSetupState,
     amountsDollarState: AmountSetupState,
-    onToggleSetupSection: () -> Unit,
     onSave: () -> Unit
 ) {
 
@@ -46,7 +48,8 @@ fun AmountSetupForm(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(8.dp)
+            .semantics { contentDescription = "AmountSetupForm" },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -66,7 +69,7 @@ fun AmountSetupForm(
                     focusManager.moveFocus(FocusDirection.Down)
                 }
             ),
-            testTag = "Tag_Field_${converterState.field.title}"
+            testTag = TestTags.RATE_FIELD
         )
         Spacer(modifier = Modifier.widthIn(2.dp))
         NumberField(
@@ -84,7 +87,7 @@ fun AmountSetupForm(
                     focusManager.moveFocus(FocusDirection.Down)
                 }
             ),
-            testTag = "Tag_Field_${amountState.field.title}"
+            testTag = TestTags.MAX_BOLIVARES
         )
         Spacer(modifier = Modifier.widthIn(2.dp))
         NumberField(
@@ -102,12 +105,11 @@ fun AmountSetupForm(
                     keyboardController?.hide()
                 }
             ),
-            testTag = "Tag_Field_${amountsDollarState.field.title}"
+            testTag = TestTags.MAX_DOLLAR
         )
         IconButton(
             onClick = {
                 onSave()
-                onToggleSetupSection()
             },
             modifier = Modifier
         ) {
@@ -139,7 +141,6 @@ private fun AmountSetupFormPreview() {
             converterState = converterState,
             amountState = amountState,
             amountsDollarState = amountsDollarState,
-            onToggleSetupSection = { idSetupSectionVisible.value = !idSetupSectionVisible.value },
             onSave = { }
         )
     }

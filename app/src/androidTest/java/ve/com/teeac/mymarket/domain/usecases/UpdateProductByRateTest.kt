@@ -25,7 +25,7 @@ import javax.inject.Inject
 @UninstallModules(AppModule::class)
 @SmallTest
 @RunWith(AndroidJUnit4::class)
-class UpdateProductsMarketUseCaseTest {
+class UpdateProductByRateTest {
 
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
@@ -34,7 +34,7 @@ class UpdateProductsMarketUseCaseTest {
     lateinit var useCase: DetailsMarketUseCase
 
     private val productWithoutAmounts = MarketDetail(
-        id= 3,
+        id = 3,
         marketId = 1,
         quantity = 4.0,
         description = "Papas",
