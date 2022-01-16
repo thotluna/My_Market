@@ -145,7 +145,6 @@ class MarketsScreenKtTest {
 
 
     fun saveEvent() = runTest{
-        /* Todo: problem with flow addMarket*/
         getCompose()
         composeRule.onNodeWithContentDescription("Add Market")
             .assertIsDisplayed()
