@@ -144,13 +144,4 @@ class MarketsScreenKtTest {
     }
 
 
-    fun saveEvent() = runTest{
-        getCompose()
-        composeRule.onNodeWithContentDescription("Add Market")
-            .assertIsDisplayed()
-            .performClick()
-        composeRule.onNodeWithTag(TestTags.LIST_MARKETS)
-            .onChildren()
-            .assertCountEquals(1)
-    }
 }

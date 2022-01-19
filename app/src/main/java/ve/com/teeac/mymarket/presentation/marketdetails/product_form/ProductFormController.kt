@@ -9,6 +9,7 @@ import ve.com.teeac.mymarket.presentation.InvalidPropertyApp
 import ve.com.teeac.mymarket.presentation.marketdetails.NoteTextFieldState
 import ve.com.teeac.mymarket.presentation.marketdetails.NumberTextFieldState
 import kotlin.math.round
+import kotlin.math.roundToInt
 
 class ProductFormController(
     private val useCase: ProductUseCase,
@@ -130,7 +131,9 @@ class ProductFormController(
         if (number == amountDollar.value.number) return
         _amountDollar.value = amountDollar.value.copy(number = number)
         _amountBs.value = amountBs.value.copy(
-            number = amountDollar.value.number!!.toDouble() * _rate.value.toDouble()
+            number = amountDollar.value.number?.let{
+                it.toDouble() * _rate.value.toDouble()
+            }?: 0.00
         )
     }
 
@@ -139,7 +142,10 @@ class ProductFormController(
         _amountBs.value = amountBs.value.copy(number = number)
         if (_rate.value.toDouble() > 0) {
             _amountDollar.value = amountDollar.value.copy(
-                number = Math.round((amountBs.value.number!!.toDouble() / _rate.value.toDouble()) * 1000.0) / 1000.0
+                number = amountBs.value.number?.let{
+                    ((it.toDouble() / _rate.value.toDouble()) * 1000.0).roundToInt() / 1000.0
+
+                }?:0.00
             )
         }
     }

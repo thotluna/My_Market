@@ -2,28 +2,30 @@ package ve.com.teeac.mymarket.presentation.markets
 
 import com.google.common.truth.Truth.assertThat
 import io.mockk.MockKAnnotations
-import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.test.StandardTestDispatcher
+//import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
 
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import ve.com.teeac.mymarket.domain.model.Market
 import ve.com.teeac.mymarket.domain.usecases.AddMarket
 import ve.com.teeac.mymarket.domain.usecases.GetMarkets
 import ve.com.teeac.mymarket.domain.usecases.MarketUseCases
-import ve.com.teeac.mymarket.utils.MainCoroutineRule
 
 
 @ExperimentalCoroutinesApi
 class MarketsViewModelTest {
 
-    @ExperimentalCoroutinesApi
-    @get:Rule
-    var mainCoroutineRule = MainCoroutineRule()
+//    private val standardTestDispatcher = StandardTestDispatcher()
 
     @MockK
     lateinit var addMarkets: AddMarket
@@ -54,21 +56,39 @@ class MarketsViewModelTest {
 
     @Before
     fun setUp() {
+        Dispatchers.setMain(StandardTestDispatcher())
         MockKAnnotations.init(this, relaxUnitFun = true)
     }
 
+    @After
+    fun tearDown() {
+//        Dispatchers.resetMain()
+    }
+
     @Test
-    fun initialViewModel() = runTest {
+    fun initialViewModel(){
         val useCases = MarketUseCases(addMarkets, getMarkets)
 
-        coEvery { useCases.getMarkets()}coAnswers {
+        every { useCases.getMarkets() } answers {
+            println(Thread.currentThread().name + " test coAnswer")
             flow {
                 emit(listMarkets)
             }
+
         }
 
-        val viewModel = MarketsViewModel(useCases)
-        assertThat(viewModel.state.value.markets).isEqualTo(listMarkets)
+
+        runTest{
+            val viewModel = MarketsViewModel(
+                useCase = useCases,
+            )
+            /*TODO: delete delay*/
+            delay(500L)
+            println(Thread.currentThread().name + " Test")
+            assertThat(viewModel.state.value.markets).isEqualTo(listMarkets)
+        }
+
+
     }
 
 

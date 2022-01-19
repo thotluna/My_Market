@@ -1,6 +1,5 @@
 package ve.com.teeac.mymarket.presentation.marketdetails.amountssetup
 
-import androidx.compose.ui.focus.FocusState
 import ve.com.teeac.mymarket.presentation.marketdetails.NumberTextFieldState
 
 

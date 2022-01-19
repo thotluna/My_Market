@@ -18,24 +18,8 @@ private val DarkColorPalette = darkColors(
     onSurface = Color.White,
 )
 
-private val LightColorPalette = lightColors(
-    primary = Blue_700,
-    primaryVariant = Blue_900,
-    secondary = Teal_500,
-    background = Blue_900
-
-    /*primary = Orange_500,
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
-    background = Blue_900,
-    onBackground = Blue_700,
-    surface = Blue_500,
-    onSurface = Purple200,*/
-
-)
-
 @Composable
-fun MyMarketTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable() () -> Unit) {
+fun MyMarketTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
     val colors = DarkColorPalette
 
 

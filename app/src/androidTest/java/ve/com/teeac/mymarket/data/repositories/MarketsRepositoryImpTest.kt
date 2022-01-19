@@ -94,7 +94,7 @@ class MarketsRepositoryImpTest {
             amount = 100.0
         )
         repository.addMarket(market)
-        repository.deleteMarket(market)
+        repository.deleteMarket(market.id!!)
         val listNew = repository.getAllMarkers().first()
         assertThat(listNew.isEmpty()).isTrue()
     }

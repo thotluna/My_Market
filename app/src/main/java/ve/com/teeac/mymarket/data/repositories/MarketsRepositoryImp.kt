@@ -21,8 +21,8 @@ class MarketsRepositoryImp(
         return dao.addMarket(market)
     }
 
-    override suspend fun deleteMarket(market: Market) {
-        TODO("Not yet implemented")
+    override suspend fun deleteMarket(id: Long) {
+        dao.delMarket(id)
     }
 
 }

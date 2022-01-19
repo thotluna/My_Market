@@ -5,21 +5,18 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
-
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import ve.com.teeac.mymarket.di.AppModule
+import ve.com.teeac.mymarket.domain.model.MarketDetail
 import ve.com.teeac.mymarket.presentation.MainActivity
 import ve.com.teeac.mymarket.presentation.components.MyMarketApp
 import ve.com.teeac.mymarket.presentation.navigation.Screen
@@ -55,7 +52,7 @@ class DetailsMarketScreenKtTest {
                     startDestination = Screen.DetailsMarketScreen.route
                 ) {
                     composable(route = Screen.DetailsMarketScreen.route) {
-                        DetailsMarketScreen(navigateUp = { /*TODO*/ })
+                        DetailsMarketScreen(navigateUp = { })
                     }
                 }
 
@@ -322,6 +319,89 @@ class DetailsMarketScreenKtTest {
                 .assertCountEquals(0)
 
         }
+
+    }
+
+    @Test
+    fun validateTotals(){
+
+
+        val maxDollar = 5.0
+        val listProduct = listOf(
+            MarketDetail(
+                quantity = 5.0,
+                description = "Huevos",
+                unitAmountDollar = 0.25,
+                amountDollar = 1.25,
+                marketId = 1L
+            ),
+            MarketDetail(
+                quantity = 2.0,
+                description = "Refresco",
+                unitAmountDollar = 1.625,
+                amountDollar = 3.25,
+                marketId = 1L
+            ),
+            MarketDetail(
+                quantity = 1.0,
+                description = "aceite",
+                unitAmountDollar = 3.25,
+                amountDollar = 3.25,
+                marketId = 1L
+            )
+        )
+
+        composeRule.onAllNodes(hasContentDescription("Totals")).printToLog("TAG")
+
+        composeRule.onNodeWithContentDescription("Totals")
+            .onChildren()
+            .assertAny(hasText("Totals"))
+            .assertAny(hasText("0.00 Bs"))
+            .assertAny(hasText("0.00 Bs"))
+
+        composeRule.onNodeWithContentDescription("Open Setup Section").performClick()
+        composeRule.onNodeWithTag(TestTags.RATE_FIELD).performTextInput("5")
+        composeRule.onNodeWithTag(TestTags.MAX_DOLLAR).performTextInput(maxDollar.toString())
+        composeRule.onNodeWithContentDescription("Guardar setup").performClick()
+
+        composeRule.onNodeWithContentDescription("Open Product Section").performClick()
+        composeRule.onNodeWithTag(TestTags.QUALITY_FIELD).performTextInput(listProduct[0].quantity.toString())
+        composeRule.onNodeWithTag(TestTags.DESCRIPTION_FIELD).performTextInput(listProduct[0].description)
+        composeRule.onNodeWithTag(TestTags.AMOUNT_DOLLAR_FIELD).performTextInput(listProduct[0].unitAmountDollar.toString())
+        composeRule.onNodeWithTag(TestTags.AMOUNT_DOLLAR_FIELD).performImeAction()
+
+        composeRule.onNodeWithContentDescription("Totals")
+            .onChildren()
+            .assertAny(hasText("6.25 Bs"))
+            .assertAny(hasText("1.25 $"))
+
+        composeRule.onRoot().printToLog("My Tag")
+
+        composeRule.onNodeWithTag(TestTags.QUALITY_FIELD).performTextInput(listProduct[1].quantity.toString())
+        composeRule.onNodeWithTag(TestTags.DESCRIPTION_FIELD).performTextInput(listProduct[1].description)
+        composeRule.onNodeWithTag(TestTags.AMOUNT_DOLLAR_FIELD).performTextInput(listProduct[1].unitAmountDollar.toString())
+        composeRule.onNodeWithTag(TestTags.AMOUNT_DOLLAR_FIELD).performImeAction()
+
+        composeRule.onNodeWithContentDescription("Totals")
+            .onChildren()
+            .assertAny(hasText("22.50 Bs"))
+            .assertAny(hasText("4.50 $"))
+
+        composeRule.onNodeWithTag(TestTags.QUALITY_FIELD).performTextInput(listProduct[2].quantity.toString())
+        composeRule.onNodeWithTag(TestTags.DESCRIPTION_FIELD).performTextInput(listProduct[2].description)
+        composeRule.onNodeWithTag(TestTags.AMOUNT_DOLLAR_FIELD).performTextInput(listProduct[2].unitAmountDollar.toString())
+        composeRule.onNodeWithTag(TestTags.AMOUNT_DOLLAR_FIELD).performImeAction()
+
+        composeRule.onNodeWithContentDescription("Totals")
+            .onChildren()
+            .assertAny(hasText("38.75 Bs"))
+            .assertAny(hasText("7.75 $"))
+
+
+
+
+
+
 
     }
 

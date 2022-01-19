@@ -6,10 +6,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ve.com.teeac.mymarket.domain.model.Market
+import ve.com.teeac.mymarket.domain.model.MarketDetail
 import ve.com.teeac.mymarket.domain.usecases.DetailsMarketUseCase
 import ve.com.teeac.mymarket.presentation.InvalidEventException
 import ve.com.teeac.mymarket.presentation.InvalidPropertyApp
@@ -36,15 +39,22 @@ class DetailsMarketViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UiEvent>(replay = 1)
     val eventFlow = _eventFlow.asSharedFlow()
 
+    private val _totalBolivares = mutableStateOf(TotalStatus())
+    val totalBolivares: State<TotalStatus> = _totalBolivares
+
+    private val _totalDollar = mutableStateOf(TotalStatus())
+    val totalDollar: State<TotalStatus> = _totalDollar
+
     init {
         savedStateHandle.get<Long>("marketId")?.let{
             if (it > -1) {
                 savedStateHandle.get<Long?>("marketId")?.let { idMarket ->
-                    loadIdMarket(idMarket)
                     viewModelScope.launch {
+                        loadIdMarket(idMarket)
                         initialAmountSetup(idMarket)
+                        getProductList()
                     }
-                    getProductList()
+
 
                 }
             }
@@ -68,9 +78,7 @@ class DetailsMarketViewModel @Inject constructor(
                 try {
                     val idMarket = getMarketId()
                     productController.saveProduct(idMarket)
-
-
-
+                    updateMarket()
                 } catch (e: InvalidPropertyApp) {
                     _eventFlow.emit(
                         UiEvent.ShowSnackBar(
@@ -84,6 +92,7 @@ class DetailsMarketViewModel @Inject constructor(
                 viewModelScope.launch {
                     try {
                         productController.loadProduct(event.idProduct)
+                        if(!productController.isSectionVisible.value) productController.onToggleSection()
                     } catch (e: InvalidPropertyApp) {
                         _eventFlow.emit(
                             UiEvent
@@ -98,6 +107,9 @@ class DetailsMarketViewModel @Inject constructor(
             is DetailsMarketEvent.DeleteProduct -> {
                 viewModelScope.launch {
                     productController.deleteProduct(event.idProduct)
+                    loadTotals()
+                    updateMarket()
+
                 }
             }
             is DetailsMarketEvent.ClearProductForm -> {
@@ -130,6 +142,23 @@ class DetailsMarketViewModel @Inject constructor(
         }
     }
 
+    private fun updateMarket(){
+        val market = Market(
+            id = state.value.marketId,
+            amountDollar = totalDollar.value.amount,
+            amount =totalBolivares.value.amount
+        )
+        viewModelScope.launch{
+            updateMarketDb(market)
+        }
+    }
+
+    private suspend fun updateMarketDb(market: Market){
+        withContext(Dispatchers.IO){
+            useCase.addMarket(market)
+        }
+    }
+
     private fun loadIdMarket(idMarket: Long) {
         _state.value = state.value.copy(
             marketId = idMarket
@@ -138,12 +167,16 @@ class DetailsMarketViewModel @Inject constructor(
         setupController.loadIdMarket(idMarket)
     }
 
+
     private fun initialAmountSetup(idMarket: Long) {
         val rate = setupController.rate.value.number
-        setupController.onEvent(AmountSetupEvent.LoadSetup(idMarket))
-        val newRate = setupController.rate.value.number
-        if (newRate == rate) return
-        productController.onEvent(ProductEvent.UpdateRate(idMarket))
+        viewModelScope.launch{
+            setupController.loadSetup(AmountSetupEvent.LoadSetup(idMarket))
+            val newRate = setupController.rate.value.number
+            if (newRate == rate) return@launch
+            productController.onEvent(ProductEvent.UpdateRate(idMarket))
+
+        }
 
     }
 
@@ -156,9 +189,43 @@ class DetailsMarketViewModel @Inject constructor(
                     list = productList
                 )
             }
+            .onEach {
+                loadTotals()
+            }
             .launchIn(viewModelScope)
     }
 
+    private fun loadTotals(list: List<MarketDetail>? = null){
+        val sumBolivares = list?.sumOf{it.amount} ?: state.value.list.sumOf { it.amount }
+        val sumDollars = list?.sumOf{it.amountDollar} ?: state.value.list.sumOf { it.amountDollar }
+        _totalBolivares.value = totalBolivares.value.copy(
+            amount = sumBolivares,
+            itExceeds = colorTotal(
+                maximus = setupController.maxBolivares.value.number,
+                amount = sumBolivares
+            )
+        )
 
+        _totalDollar.value = totalDollar.value.copy(
+            amount = sumDollars,
+            itExceeds = colorTotal(
+                maximus = setupController.maxDollar.value.number,
+                amount = sumDollars
+            )
+        )
+    }
 
+    private fun colorTotal(maximus: Number?, amount: Double ): Boolean{
+        return maximus?.let{
+            return it.toDouble() < amount
+        }?: false
+
+    }
 }
+
+
+
+data class TotalStatus(
+    val amount: Double = 0.0,
+    val itExceeds: Boolean = false
+)

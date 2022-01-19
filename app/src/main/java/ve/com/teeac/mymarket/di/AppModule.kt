@@ -6,6 +6,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import ve.com.teeac.mymarket.domain.repositories.MarketsRepository
 import ve.com.teeac.mymarket.data.data_source.AppDatabase
@@ -22,6 +23,7 @@ import ve.com.teeac.mymarket.domain.usecases.setup_use_cases.GetAmountsSetup
 import ve.com.teeac.mymarket.domain.usecases.setup_use_cases.SetupUseCase
 import ve.com.teeac.mymarket.presentation.marketdetails.amountssetup.SetupController
 import ve.com.teeac.mymarket.presentation.marketdetails.product_form.ProductFormController
+import ve.com.teeac.mymarket.presentation.markets.MarketsViewModel
 import javax.inject.Singleton
 
 @Module
@@ -87,23 +89,6 @@ object AppModule {
     }
 
     @Provides
-    fun providerSetupController(useCase: SetupUseCase): SetupController{
-        return SetupController(
-            valueInitial = AmountsSetup(),
-            useCase = useCase
-        )
-    }
-
-    @Provides
-    fun providerProductController(useCase: ProductUseCase): ProductFormController{
-        return ProductFormController(
-            useCase = useCase,
-            dispatcher = Dispatchers.Main,
-            dispatcherIo = Dispatchers.IO
-        )
-    }
-
-    @Provides
     @Singleton
     fun providerDetailsMarketUseCases(
         repositoryAmount: AmountsSetupRepository,
@@ -121,5 +106,23 @@ object AppModule {
             deleteProduct = DeleteProduct(repositoryDetail)
         )
     }
+
+    @Provides
+    fun providerSetupController(useCase: SetupUseCase): SetupController{
+        return SetupController(
+            valueInitial = AmountsSetup(),
+            useCase = useCase
+        )
+    }
+
+    @Provides
+    fun providerProductController(useCase: ProductUseCase): ProductFormController{
+        return ProductFormController(
+            useCase = useCase,
+            dispatcher = Dispatchers.Main,
+            dispatcherIo = Dispatchers.IO
+        )
+    }
+
 
 }

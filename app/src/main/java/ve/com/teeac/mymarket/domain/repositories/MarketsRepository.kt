@@ -11,6 +11,6 @@ interface MarketsRepository {
 
     suspend fun addMarket(market: Market): Long
 
-    suspend fun deleteMarket(market: Market)
+    suspend fun deleteMarket(id: Long)
 
 }

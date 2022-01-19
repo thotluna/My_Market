@@ -6,7 +6,6 @@ sealed class DetailsMarketEvent{
     object ClearProductForm: DetailsMarketEvent()
     data class UpdateProduct( val idProduct: Long): DetailsMarketEvent()
     data class DeleteProduct( val idProduct: Long): DetailsMarketEvent()
-    data class UpdateRate(val rate: Number): DetailsMarketEvent()
 }
 
 

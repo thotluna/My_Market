@@ -13,6 +13,7 @@ import org.junit.Before
 import org.junit.Test
 import ve.com.teeac.mymarket.domain.model.MarketDetail
 import ve.com.teeac.mymarket.domain.usecases.product_use_cases.*
+import kotlin.math.roundToInt
 
 @ExperimentalCoroutinesApi
 class ProductFormControllerTest {
@@ -111,8 +112,8 @@ class ProductFormControllerTest {
         val rate = 3
         val expected = product.copy(
             id = null,
-            unitAmountDollar = Math.round((product.unitAmount / rate) * 1000.0) / 1000.0,
-            amountDollar =  (Math.round(((product.unitAmount / rate)) * 1000.0) / 1000.0) * product.quantity
+            unitAmountDollar = ((product.unitAmount / rate) * 1000.0).roundToInt() / 1000.0,
+            amountDollar =  ((((product.unitAmount / rate)) * 1000.0).roundToInt() / 1000.0) * product.quantity
         )
         val sendProduct = slot<MarketDetail>()
         coEvery { useCase.addProduct(capture(sendProduct)) } coAnswers { product.id }

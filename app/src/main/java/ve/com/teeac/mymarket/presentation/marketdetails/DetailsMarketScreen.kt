@@ -202,6 +202,10 @@ fun DetailsMarketScreen(
                 )
                 Spacer(modifier = Modifier.widthIn(8.dp))
             }
+            SectionTotals(
+                currentDollars = viewModel.totalDollar.value,
+                currentBolivares = viewModel.totalBolivares.value,
+            )
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -221,11 +225,57 @@ fun DetailsMarketScreen(
                 }
             }
 
+
         }
 
     }
 
 
+}
+
+@Composable
+fun SectionTotals(
+    currentDollars: TotalStatus = TotalStatus(),
+    currentBolivares: TotalStatus = TotalStatus()
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics { contentDescription = "Totals" },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.End
+    ) {
+        Text(
+            text = "Totals",
+            style = MaterialTheme.typography.h5
+        )
+        Spacer(modifier = Modifier.widthIn(8.dp))
+        Text(
+            text = stringResource(
+                id = R.string.string_dollar,
+                currentDollars.amount
+            ),
+            color = if (currentDollars.itExceeds) {
+                MaterialTheme.colors.primary
+            } else {
+                MaterialTheme.colors.onPrimary
+            }
+
+        )
+        Spacer(modifier = Modifier.widthIn(8.dp))
+        Text(
+            text = stringResource(
+                id = R.string.string_bs,
+                currentBolivares.amount
+            ),
+            color = if (currentBolivares.itExceeds) {
+                MaterialTheme.colors.primary
+            } else {
+                MaterialTheme.colors.onPrimary
+            }
+        )
+
+    }
 }
 
 

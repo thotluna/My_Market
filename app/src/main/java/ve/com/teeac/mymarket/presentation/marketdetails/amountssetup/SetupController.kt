@@ -99,8 +99,7 @@ class SetupController(
 
         isLoad = false
     }
-    
-    @VisibleForTesting
+
     suspend fun loadSetup(event: AmountSetupEvent.LoadSetup) {
            val newSetup: AmountsSetup? = getFromDatabase(event.idMarket)
             newSetup?.let {  set(it) }
@@ -120,7 +119,9 @@ class SetupController(
         rate.value.number?.let {
             if(rate.value.number == 0) return@let
             _maxBolivares.value = maxBolivares.value.copy(
-                number = maxDollar.value.number!!.toDouble() * it.toDouble()
+                number = maxDollar.value.number?.let{ dollar ->
+                    dollar.toDouble() * it.toDouble()
+                }?: 0.00
             )
         }
     }
@@ -133,7 +134,9 @@ class SetupController(
         rate.value.number?.let {
             if (rate.value.number == 0) return@let
             _maxDollar.value = maxDollar.value.copy(
-                number = maxBolivares.value.number!!.toDouble() / it.toDouble()
+                number = maxBolivares.value.number?.let{ bolivares ->
+                    bolivares.toDouble() / it.toDouble()
+                }?: 0.00
             )
         }
     }

@@ -68,6 +68,7 @@ fun NumberField(
             textStyle = textStyle.copy(
                 textAlign = TextAlign.End
             ),
+
             modifier = Modifier
                 .testTag(testTag)
                 .fillMaxWidth(),

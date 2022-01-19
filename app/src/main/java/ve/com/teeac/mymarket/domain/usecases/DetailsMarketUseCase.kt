@@ -10,7 +10,6 @@ data class DetailsMarketUseCase(
     val getAmountsSetup: GetAmountsSetup,
 
     val addMarket: AddMarket,
-
     val getAllProducts: GetAllProducts,
     val addProduct: AddProduct,
     val getProduct: GetProduct,

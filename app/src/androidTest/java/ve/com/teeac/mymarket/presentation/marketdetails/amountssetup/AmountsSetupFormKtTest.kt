@@ -44,8 +44,6 @@ class AmountsSetupFormKtTest {
 
     private lateinit var controller: SetupController
 
-    private val amount = "56258.23"
-
 
     @Before
     fun setUp() {

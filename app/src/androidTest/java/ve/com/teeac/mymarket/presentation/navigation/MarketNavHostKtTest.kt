@@ -38,9 +38,9 @@ class MarketNavHostKtTest {
     @Inject
     lateinit var useCase: DetailsMarketUseCase
 
-    lateinit var navController: NavHostController
+    private lateinit var navController: NavHostController
 
-    val market = Market(id = 1L)
+    private val market = Market(id = 1L)
 
     @Before
     fun setUp() {

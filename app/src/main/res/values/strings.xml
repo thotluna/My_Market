@@ -2,13 +2,8 @@
     <string name="app_name">My Market</string>
     <string name="string_dollar">%1$.2f $</string>
     <string name="string_bs">%1$.2f Bs</string>
-    <string name="string_quantity">%1$.2f</string>
-    <string name="welcome_messages">Hello, %1$s! You have %2$d new messages.</string>
-    <string name="title_market_screen">Mercado</string>
     <string name="title_app">Mis Mercados</string>
     <string name="markets_empty">Todavia no se ha realizado el primer mercado</string>
     <string name="add_market">Add Market</string>
-    <string name="taza">Taza:</string>
-    <string name="max">Max</string>
     <string name="word_testing">Taza de Conversion</string>
 </resources>

@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -12,13 +13,12 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import ve.com.teeac.mymarket.domain.model.Market
 import ve.com.teeac.mymarket.domain.usecases.MarketUseCases
 import javax.inject.Inject
 
 @HiltViewModel
 class MarketsViewModel @Inject constructor(
-    private val useCase: MarketUseCases
+    private val useCase: MarketUseCases,
 ) : ViewModel() {
 
     private val _state = mutableStateOf(MarketsState())
@@ -36,7 +36,7 @@ class MarketsViewModel @Inject constructor(
     fun onEvent(event: MarketsEvent) {
         when (event) {
             is MarketsEvent.NavigateMarket -> {
-                viewModelScope.launch(Dispatchers.IO) {
+                viewModelScope.launch {
                     event.idMarket?.let {
                         _eventFlow.emit(UiEvent.NavigateToDetails(it))
                     }?: _eventFlow.emit(UiEvent.NavigateToDetails(-1))
@@ -47,11 +47,13 @@ class MarketsViewModel @Inject constructor(
 
     private fun getMarkets() {
         getMarketsJob?.cancel()
+        println(Thread.currentThread().name + " viewmodel")
         getMarketsJob = useCase.getMarkets()
             .onEach { markets ->
                 _state.value = state.value.copy(
                     markets = markets
                 )
+                println(Thread.currentThread().name + " scope viewmodel")
             }.launchIn(viewModelScope)
 
     }
