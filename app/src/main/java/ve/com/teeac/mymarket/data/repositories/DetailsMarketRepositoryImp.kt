@@ -28,4 +28,8 @@ class DetailsMarketRepositoryImp(
     override suspend fun updateProductByRate(list: List<MarketDetail>) {
         dao.addListDetailMarket(list)
     }
+
+    override suspend fun changeActivatedProduct(id: Long, activated: Boolean) {
+        dao.changeActivated(id, activated)
+    }
 }

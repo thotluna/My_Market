@@ -51,19 +51,13 @@ object TestAppModule {
     @Provides
     @Singleton
     fun providerDetailsMarketUseCases(
-        repositoryAmount: AmountsSetupRepository,
         repositoryMarkets: MarketsRepository,
         repositoryDetail: DetailMarketRepository
-    ): DetailsMarketUseCase{
+    ): DetailsMarketUseCase {
         return DetailsMarketUseCase(
-            addAmountsSetup = AddAmountsSetup(repositoryAmount),
-            getAmountsSetup = GetAmountsSetup(repositoryAmount),
             addMarket = AddMarket(repositoryMarkets),
-            addProduct = AddProduct(repositoryDetail),
-            getProduct = GetProduct(repositoryDetail),
-            updateProduct = UpdateProductByRate(repositoryDetail),
-            getAllProducts =  GetAllProducts(repositoryDetail),
-            deleteProduct = DeleteProduct(repositoryDetail)
+            getAllProducts = GetAllProducts(repositoryDetail),
+            updateActivatedProduct = ActivatedProduct(repositoryDetail)
         )
     }
 

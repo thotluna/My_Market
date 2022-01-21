@@ -207,12 +207,40 @@ class ProductFormControllerTest {
         confirmVerified(useCase.updateProducts)
     }
 
+    @Test
+    fun `Persist section`() = runTest {
+        coEvery { useCase.addProduct(any()) } returns Unit
+
+        assertThat(controller.persistentShowSection.value).isEqualTo(false)
+        assertThat(controller.isSectionVisible.value).isEqualTo(false)
+
+        controller.onChangedPersistent()
+        controller.onToggleSection()
+
+        controller.saveProduct(1L)
+
+        assertThat(controller.persistentShowSection.value).isEqualTo(true)
+        assertThat(controller.isSectionVisible.value).isEqualTo(true)
+
+        controller.onChangedPersistent()
+
+        assertThat(controller.persistentShowSection.value).isEqualTo(false)
+        assertThat(controller.isSectionVisible.value).isEqualTo(true)
+
+        controller.saveProduct(1L)
+
+        assertThat(controller.isSectionVisible.value).isEqualTo(false)
+
+    }
+
 
     private fun setRate(number: Number) {
         coEvery { useCase.updateProducts(any(), any()) } returns Unit
         controller.loadIdMarket(product.marketId)
         controller.onEvent(ProductEvent.UpdateRate(number))
     }
+
+
 
 
 }

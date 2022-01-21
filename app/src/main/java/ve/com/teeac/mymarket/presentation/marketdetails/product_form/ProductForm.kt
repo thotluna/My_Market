@@ -3,9 +3,7 @@ package ve.com.teeac.mymarket.presentation.marketdetails.product_form
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Card
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,7 +20,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ve.com.teeac.mymarket.presentation.components.MyMarketApp
@@ -42,6 +39,8 @@ fun ProductForm(
     amountBsChange: (number: Number?) -> Unit,
     amountDollar: NumberTextFieldState,
     amountDollarChange: (number: Number?) -> Unit,
+    persistent: Boolean,
+    changePersistent: () -> Unit,
     onSave: () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
@@ -55,15 +54,33 @@ fun ProductForm(
             .semantics { contentDescription = "ProductForm" },
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = "Mantener ventana", fontSize = 12.sp)
+                Spacer(modifier = Modifier.widthIn(4.dp))
+                Checkbox(
+                    checked = persistent,
+                    onCheckedChange = { changePersistent() },
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = MaterialTheme.colors.primary
+                    ),
+                    modifier = Modifier
+                        .semantics { contentDescription = "Mantener seccion" },
+                )
+            }
 
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,){
                 NumberField(
                     number = quantity.number,
-                    label = { Text(quantity.title, fontSize = 12.sp) },
+                    label = { Text(quantity.title) },
                     onNumberChange = quantityChange,
                     modifier = Modifier
-                        .focusOrder(first){down = second}
+                        .focusOrder(first) { down = second }
                         .weight(1f),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                     keyboardActions = KeyboardActions(
@@ -83,7 +100,8 @@ fun ProductForm(
                         .weight(2f)
                         .focusOrder(second) { down = third }
                         .testTag(TestTags.DESCRIPTION_FIELD),
-                    singleLine = true,
+                    singleLine = false,
+                    maxLines = 2,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                     keyboardActions = KeyboardActions(
                         onNext = {
@@ -142,6 +160,7 @@ private fun ProductFormPreview() {
     val description = remember { mutableStateOf(NoteTextFieldState(hint = "Descripcion") )}
     val amountDollar = remember { mutableStateOf(NumberTextFieldState(title = "$")) }
     val amountBs = remember { mutableStateOf(NumberTextFieldState(title = "Bs")) }
+    val persistent = remember { mutableStateOf(false)}
 
 
     MyMarketApp {
@@ -154,7 +173,9 @@ private fun ProductFormPreview() {
             amountBsChange = {amountBs.value = amountBs.value.copy(number = it)},
             amountDollar = amountDollar.value,
             amountDollarChange = {amountDollar.value = amountDollar.value.copy(number = it)},
-            onSave = {}
+            onSave = {},
+            persistent = persistent.value,
+            changePersistent = {persistent.value = !persistent.value}
         )
     }
 }

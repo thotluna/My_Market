@@ -5,6 +5,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
@@ -63,7 +64,9 @@ class ProductFormKtTest {
                     amountDollarChange = {
                             controller.onEvent(ProductEvent.EnteredAmountDollar(it))
                         },
-                    onSave = { }
+                    onSave = { },
+                    persistent = controller.persistentShowSection.value,
+                    changePersistent = {controller.onChangedPersistent()}
                 )
 
             }
@@ -173,6 +176,8 @@ class ProductFormKtTest {
             .performTextInput(product.unitAmount.toString())
 
     }
+
+
 
 
 }

@@ -45,8 +45,14 @@ class DetailsMarketViewModel @Inject constructor(
     private val _totalDollar = mutableStateOf(TotalStatus())
     val totalDollar: State<TotalStatus> = _totalDollar
 
+    private val _availableDollars = mutableStateOf(TotalStatus())
+    val availableDollars: State<TotalStatus> = _availableDollars
+
+    private val _availableBolivares = mutableStateOf(TotalStatus())
+    val availableBolivares: State<TotalStatus> = _availableBolivares
+
     init {
-        savedStateHandle.get<Long>("marketId")?.let{
+        savedStateHandle.get<Long>("marketId")?.let {
             if (it > -1) {
                 savedStateHandle.get<Long?>("marketId")?.let { idMarket ->
                     viewModelScope.launch {
@@ -74,25 +80,26 @@ class DetailsMarketViewModel @Inject constructor(
                 productController.onEvent(ProductEvent.UpdateRate(setupController.rate.value.number))
             }
             is DetailsMarketEvent.SaveProduct -> {
-            viewModelScope.launch {
-                try {
-                    val idMarket = getMarketId()
-                    productController.saveProduct(idMarket)
-                    updateMarket()
-                } catch (e: InvalidPropertyApp) {
-                    _eventFlow.emit(
-                        UiEvent.ShowSnackBar(
-                            message = e.message ?: "No se pudo guardar el nuevo producto"
+                productController.closeSectionIsRequired()
+                viewModelScope.launch {
+                    try {
+                        val idMarket = getMarketId()
+                        productController.closeSectionIsRequired()
+                        productController.saveProduct(idMarket)
+                    } catch (e: InvalidPropertyApp) {
+                        _eventFlow.emit(
+                            UiEvent.ShowSnackBar(
+                                message = e.message ?: "No se pudo guardar el nuevo producto"
+                            )
                         )
-                    )
+                    }
                 }
             }
-        }
             is DetailsMarketEvent.UpdateProduct -> {
                 viewModelScope.launch {
                     try {
                         productController.loadProduct(event.idProduct)
-                        if(!productController.isSectionVisible.value) productController.onToggleSection()
+                        if (!productController.isSectionVisible.value) productController.onToggleSection()
                     } catch (e: InvalidPropertyApp) {
                         _eventFlow.emit(
                             UiEvent
@@ -102,20 +109,27 @@ class DetailsMarketViewModel @Inject constructor(
                         )
                     }
                 }
-
+            }
+            is DetailsMarketEvent.ChangedActivatedProduct -> {
+                updateActivatedProduct(id = event.idProduct, isActive = !event.value)
             }
             is DetailsMarketEvent.DeleteProduct -> {
                 viewModelScope.launch {
                     productController.deleteProduct(event.idProduct)
                     loadTotals()
-                    updateMarket()
-
                 }
             }
             is DetailsMarketEvent.ClearProductForm -> {
                 productController.clear()
             }
             else -> throw InvalidEventException(InvalidEventException.DETAILS_MARKET_EVENT)
+        }
+    }
+
+    private fun updateActivatedProduct(id: Long, isActive: Boolean) {
+        viewModelScope.launch{
+            useCase.updateActivatedProduct(id, isActive)
+            getProductList()
         }
     }
 
@@ -142,19 +156,19 @@ class DetailsMarketViewModel @Inject constructor(
         }
     }
 
-    private fun updateMarket(){
+    private fun updateMarket() {
         val market = Market(
             id = state.value.marketId,
             amountDollar = totalDollar.value.amount,
-            amount =totalBolivares.value.amount
+            amount = totalBolivares.value.amount
         )
-        viewModelScope.launch{
+        viewModelScope.launch {
             updateMarketDb(market)
         }
     }
 
-    private suspend fun updateMarketDb(market: Market){
-        withContext(Dispatchers.IO){
+    private suspend fun updateMarketDb(market: Market) {
+        withContext(Dispatchers.IO) {
             useCase.addMarket(market)
         }
     }
@@ -170,7 +184,7 @@ class DetailsMarketViewModel @Inject constructor(
 
     private fun initialAmountSetup(idMarket: Long) {
         val rate = setupController.rate.value.number
-        viewModelScope.launch{
+        viewModelScope.launch {
             setupController.loadSetup(AmountSetupEvent.LoadSetup(idMarket))
             val newRate = setupController.rate.value.number
             if (newRate == rate) return@launch
@@ -195,9 +209,19 @@ class DetailsMarketViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    private fun loadTotals(list: List<MarketDetail>? = null){
-        val sumBolivares = list?.sumOf{it.amount} ?: state.value.list.sumOf { it.amount }
-        val sumDollars = list?.sumOf{it.amountDollar} ?: state.value.list.sumOf { it.amountDollar }
+    private fun loadTotals(list: List<MarketDetail>? = null) {
+
+        val sumBolivares: Double
+        val sumDollars: Double
+
+        if(list != null){
+            sumBolivares = calculateTotalDollar(list)
+            sumDollars = calculateTotalBolivares(list)
+        }else{
+            sumBolivares =  calculateTotalBolivares(state.value.list)
+            sumDollars =  calculateTotalDollar(state.value.list)
+        }
+
         _totalBolivares.value = totalBolivares.value.copy(
             amount = sumBolivares,
             itExceeds = colorTotal(
@@ -213,16 +237,42 @@ class DetailsMarketViewModel @Inject constructor(
                 amount = sumDollars
             )
         )
+
+        _availableBolivares.value = availableBolivares.value.copy(
+            amount = calculateAvailableBolivares()
+        )
+        _availableDollars.value = availableDollars.value.copy(
+            amount = calculateAvailableDollars()
+        )
+
+        updateMarket()
     }
 
-    private fun colorTotal(maximus: Number?, amount: Double ): Boolean{
-        return maximus?.let{
+    private fun calculateTotalDollar(list: List<MarketDetail>): Double{
+        return list.filter { it.isActive}.sumOf { it.amountDollar }
+    }
+    private fun calculateTotalBolivares(list: List<MarketDetail>): Double{
+        return list.filter { it.isActive}.sumOf { it.amount }
+    }
+
+    private fun calculateAvailableDollars(): Double{
+        return setupController.maxDollar.value.number?.let {
+            it.toDouble() - totalDollar.value.amount
+        }?: 0.00
+    }
+    private fun calculateAvailableBolivares(): Double{
+        return setupController.maxBolivares.value.number?.let {
+            it.toDouble() - totalBolivares.value.amount
+        }?: 0.00
+    }
+
+    private fun colorTotal(maximus: Number?, amount: Double): Boolean {
+        return maximus?.let {
             return it.toDouble() < amount
-        }?: false
+        } ?: false
 
     }
 }
-
 
 
 data class TotalStatus(

@@ -14,4 +14,6 @@ interface DetailMarketRepository {
     suspend fun deleteProduct(id: Long)
 
     suspend fun updateProductByRate(list: List<MarketDetail>)
+
+    suspend fun changeActivatedProduct(id: Long, activated: Boolean)
 }
