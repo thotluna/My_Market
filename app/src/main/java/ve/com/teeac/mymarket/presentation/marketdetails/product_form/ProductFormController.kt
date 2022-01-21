@@ -8,7 +8,6 @@ import ve.com.teeac.mymarket.domain.usecases.product_use_cases.ProductUseCase
 import ve.com.teeac.mymarket.presentation.InvalidPropertyApp
 import ve.com.teeac.mymarket.presentation.marketdetails.NoteTextFieldState
 import ve.com.teeac.mymarket.presentation.marketdetails.NumberTextFieldState
-import kotlin.math.round
 import kotlin.math.roundToInt
 
 class ProductFormController(
@@ -43,12 +42,19 @@ class ProductFormController(
     private val _idSectionVisible = mutableStateOf(false)
     val isSectionVisible: State<Boolean> = _idSectionVisible
 
+    private val _persistentShowSection = mutableStateOf(false)
+    val persistentShowSection: State<Boolean> = _persistentShowSection
+
     fun loadIdMarket(id: Long) {
         _idMarket.value = id
     }
 
     fun onToggleSection() {
         _idSectionVisible.value = !isSectionVisible.value
+    }
+
+    fun onChangedPersistent() {
+        _persistentShowSection.value = !persistentShowSection.value
     }
 
     fun onEvent(event: ProductEvent) {
@@ -63,6 +69,7 @@ class ProductFormController(
                 }
             }
             is ProductEvent.Save -> {
+
                 scope.launch {
                     saveProduct(event.idMarket)
                 }
@@ -72,6 +79,7 @@ class ProductFormController(
     }
 
     private fun set(product: MarketDetail) {
+
         _idMarket.value = product.marketId
         _id.value = product.id
         _quantity.value = quantity.value.copy(number = product.quantity)
@@ -92,14 +100,20 @@ class ProductFormController(
     )
 
     suspend fun saveProduct(idMarket: Long) {
-        withContext(dispatcherIo){
+        withContext(dispatcherIo) {
             useCase.addProduct(get(idMarket))
         }
         clear()
     }
 
+    fun closeSectionIsRequired() {
+        if (!persistentShowSection.value) {
+            _idSectionVisible.value = false
+        }
+    }
+
     private fun updateRate(event: ProductEvent.UpdateRate) {
-        _rate.value = event.rate?: 0.0
+        _rate.value = event.rate ?: 0.0
 
         idMarket.value?.let {
             scope.launch {
@@ -109,8 +123,8 @@ class ProductFormController(
 
     }
 
-    suspend fun deleteProduct(id: Long){
-        withContext(dispatcherIo){
+    suspend fun deleteProduct(id: Long) {
+        withContext(dispatcherIo) {
             useCase.deleteProduct(id)
         }
     }
@@ -118,7 +132,7 @@ class ProductFormController(
     suspend fun loadProduct(id: Long) {
         getProduct(id)?.let {
             set(it)
-        }?: throw InvalidPropertyApp(InvalidPropertyApp.PRODUCT_DO_NOT_EXIST)
+        } ?: throw InvalidPropertyApp(InvalidPropertyApp.PRODUCT_DO_NOT_EXIST)
     }
 
     private suspend fun getProduct(id: Long): MarketDetail? {
@@ -127,27 +141,34 @@ class ProductFormController(
         }
     }
 
+
+
     private fun enteredAmountDollar(number: Number?) {
         if (number == amountDollar.value.number) return
         _amountDollar.value = amountDollar.value.copy(number = number)
-        _amountBs.value = amountBs.value.copy(
-            number = amountDollar.value.number?.let{
-                it.toDouble() * _rate.value.toDouble()
-            }?: 0.00
-        )
+        calculateAmountBolivaresByRate(number)
+    }
+
+    private fun calculateAmountBolivaresByRate(amount: Number?) {
+        if (amount == null || rate.value == null)  return
+        if (amount.toDouble() <= 0) return
+            _amountBs.value = amountBs.value.copy(
+                number = amount.toDouble() * rate.value!!.toDouble()
+            )
     }
 
     private fun enteredAmountBs(number: Number?) {
         if (number == amountBs.value.number) return
         _amountBs.value = amountBs.value.copy(number = number)
-        if (_rate.value.toDouble() > 0) {
-            _amountDollar.value = amountDollar.value.copy(
-                number = amountBs.value.number?.let{
-                    ((it.toDouble() / _rate.value.toDouble()) * 1000.0).roundToInt() / 1000.0
+        calculateAmountDollarsByRate(number)
+    }
 
-                }?:0.00
-            )
-        }
+    private fun calculateAmountDollarsByRate(amount: Number?) {
+        if (amount == null || rate.value == null) return
+        if (amount.toDouble() <= 0) return
+        _amountDollar.value = amountDollar.value.copy(
+            number = amount.toDouble() * rate.value!!.toDouble()
+        )
     }
 
     private fun enteredDescription(text: String?) {

@@ -2,7 +2,6 @@ package ve.com.teeac.mymarket.presentation.marketdetails
 
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,15 +21,15 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import ve.com.teeac.mymarket.R
-import ve.com.teeac.mymarket.domain.model.MarketDetail
 import ve.com.teeac.mymarket.presentation.marketdetails.amountssetup.AmountSetupEvent
 import ve.com.teeac.mymarket.presentation.marketdetails.amountssetup.AmountSetupForm
 import ve.com.teeac.mymarket.presentation.marketdetails.amountssetup.AmountSetupState
+import ve.com.teeac.mymarket.presentation.marketdetails.details_market.ItemProduct
+import ve.com.teeac.mymarket.presentation.marketdetails.details_market.SectionTotals
 import ve.com.teeac.mymarket.presentation.marketdetails.product_form.ProductEvent
 import ve.com.teeac.mymarket.presentation.marketdetails.product_form.ProductForm
 import ve.com.teeac.mymarket.presentation.marketdetails.product_form.UiEvent
@@ -198,13 +197,17 @@ fun DetailsMarketScreen(
                             )
                         )
                     },
-                    onSave = { viewModel.onEvent(DetailsMarketEvent.SaveProduct) }
+                    onSave = { viewModel.onEvent(DetailsMarketEvent.SaveProduct) },
+                    persistent = viewModel.productController.persistentShowSection.value,
+                    changePersistent = { viewModel.productController.onChangedPersistent() }
                 )
                 Spacer(modifier = Modifier.widthIn(8.dp))
             }
             SectionTotals(
                 currentDollars = viewModel.totalDollar.value,
                 currentBolivares = viewModel.totalBolivares.value,
+                availableBolivares = viewModel.availableBolivares.value,
+                availableDollars = viewModel.availableDollars.value
             )
             LazyColumn(
                 modifier = Modifier
@@ -219,7 +222,10 @@ fun DetailsMarketScreen(
                     ) {
                         ItemProduct(
                             item = product,
-                            onClick = { viewModel.onEvent(DetailsMarketEvent.UpdateProduct(it)) }
+                            onClick = { viewModel.onEvent(DetailsMarketEvent.UpdateProduct(it)) },
+                            onChecked = {id, value ->
+                                viewModel.onEvent(DetailsMarketEvent.ChangedActivatedProduct(id, value))
+                            }
                         )
                     }
                 }
@@ -233,50 +239,7 @@ fun DetailsMarketScreen(
 
 }
 
-@Composable
-fun SectionTotals(
-    currentDollars: TotalStatus = TotalStatus(),
-    currentBolivares: TotalStatus = TotalStatus()
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .semantics { contentDescription = "Totals" },
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.End
-    ) {
-        Text(
-            text = "Totals",
-            style = MaterialTheme.typography.h5
-        )
-        Spacer(modifier = Modifier.widthIn(8.dp))
-        Text(
-            text = stringResource(
-                id = R.string.string_dollar,
-                currentDollars.amount
-            ),
-            color = if (currentDollars.itExceeds) {
-                MaterialTheme.colors.primary
-            } else {
-                MaterialTheme.colors.onPrimary
-            }
 
-        )
-        Spacer(modifier = Modifier.widthIn(8.dp))
-        Text(
-            text = stringResource(
-                id = R.string.string_bs,
-                currentBolivares.amount
-            ),
-            color = if (currentBolivares.itExceeds) {
-                MaterialTheme.colors.primary
-            } else {
-                MaterialTheme.colors.onPrimary
-            }
-        )
-
-    }
-}
 
 
 @ExperimentalMaterialApi
@@ -329,75 +292,6 @@ fun BackgroundDismiss(state: DismissState) {
     }
 }
 
-@Composable
-fun ItemProduct(
-    onClick: (id: Long) -> Unit,
-    item: MarketDetail
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .clickable { onClick(item.id!!) },
 
-        ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp, horizontal = 8.dp),
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = item.quantity.toString(),
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = item.description,
-                    modifier = Modifier.weight(3f),
-                    style = MaterialTheme.typography.h5
-                )
-            }
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Text(text = "Por Unidad", modifier = Modifier.weight(1f))
-                Text(
-                    text = stringResource(
-                        id = R.string.string_dollar,
-                        item.unitAmountDollar
-                    ),
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.End
-                )
-                Text(
-                    text = stringResource(
-                        id = R.string.string_bs,
-                        item.unitAmount
-                    ),
-
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.End
-                )
-            }
-            Row {
-                Text(text = "Total", modifier = Modifier.weight(1f))
-                Text(
-                    text = stringResource(
-                        id = R.string.string_dollar,
-                        item.amountDollar
-                    ),
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.End
-                )
-                Text(
-                    text = stringResource(
-                        id = R.string.string_bs,
-                        item.amount
-                    ),
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.End
-                )
-            }
-        }
-    }
-}
 
 

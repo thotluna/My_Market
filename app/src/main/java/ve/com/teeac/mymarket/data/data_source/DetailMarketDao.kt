@@ -21,4 +21,7 @@ interface DetailMarketDao {
 
     @Query("DELETE FROM marketdetail WHERE id = :id")
     suspend fun deleteDetailMarket(id: Long)
+
+    @Query("UPDATE marketdetail SET isActive = :activated WHERE id = :id")
+    suspend fun changeActivated(id: Long, activated: Boolean)
 }

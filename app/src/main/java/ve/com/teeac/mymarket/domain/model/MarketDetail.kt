@@ -13,7 +13,8 @@ data class MarketDetail(
     var unitAmountDollar: Double = 0.00,
     var unitAmount: Double= 0.00,
     var amountDollar: Double = 0.00,
-    var amount: Double = 0.00
+    var amount: Double = 0.00,
+    val isActive: Boolean = true
 ){
     fun addRate(rate: Double): MarketDetail{
         if(rate == 0.00) return this

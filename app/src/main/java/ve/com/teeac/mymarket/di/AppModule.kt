@@ -91,19 +91,13 @@ object AppModule {
     @Provides
     @Singleton
     fun providerDetailsMarketUseCases(
-        repositoryAmount: AmountsSetupRepository,
         repositoryMarkets: MarketsRepository,
         repositoryDetail: DetailMarketRepository
     ): DetailsMarketUseCase {
         return DetailsMarketUseCase(
-            addAmountsSetup = AddAmountsSetup(repositoryAmount),
-            getAmountsSetup = GetAmountsSetup(repositoryAmount),
             addMarket = AddMarket(repositoryMarkets),
-            addProduct = AddProduct(repositoryDetail),
-            getProduct = GetProduct(repositoryDetail),
-            updateProduct = UpdateProductByRate(repositoryDetail),
             getAllProducts = GetAllProducts(repositoryDetail),
-            deleteProduct = DeleteProduct(repositoryDetail)
+            updateActivatedProduct = ActivatedProduct(repositoryDetail)
         )
     }
 

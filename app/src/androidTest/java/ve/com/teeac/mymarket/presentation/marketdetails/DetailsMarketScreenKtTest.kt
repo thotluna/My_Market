@@ -8,6 +8,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.common.truth.Truth
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
@@ -402,6 +403,41 @@ class DetailsMarketScreenKtTest {
 
 
 
+
+    }
+
+    @Test
+    fun persistentSection(){
+
+        val product = MarketDetail(
+            id = null,
+            marketId = 1L,
+            quantity = 1.0,
+            description = "Cosa",
+            unitAmount = 50.0,
+            amount = 50.0
+        )
+        composeRule.onNodeWithContentDescription("Open Product Section").performClick()
+        composeRule.onNodeWithContentDescription("ProductForm").assertIsDisplayed()
+        composeRule.onNodeWithContentDescription("Mantener seccion").performClick()
+
+        composeRule.onNodeWithTag(TestTags.QUALITY_FIELD)
+            .performTextInput(product.quantity.toString())
+        composeRule.onNodeWithTag(TestTags.DESCRIPTION_FIELD)
+            .performTextInput(product.description)
+        composeRule.onNodeWithTag(TestTags.AMOUNT_DOLLAR_FIELD).performImeAction()
+
+        composeRule.onNodeWithContentDescription("ProductForm").assertIsDisplayed()
+
+        composeRule.onNodeWithContentDescription("Mantener seccion").performClick()
+
+        composeRule.onNodeWithTag(TestTags.QUALITY_FIELD)
+            .performTextInput(product.quantity.toString())
+        composeRule.onNodeWithTag(TestTags.DESCRIPTION_FIELD)
+            .performTextInput(product.description)
+        composeRule.onNodeWithTag(TestTags.AMOUNT_DOLLAR_FIELD).performImeAction()
+
+        composeRule.onNodeWithContentDescription("ProductForm").assertDoesNotExist()
 
     }
 
