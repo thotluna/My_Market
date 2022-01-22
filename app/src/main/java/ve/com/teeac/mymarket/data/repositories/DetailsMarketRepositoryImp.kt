@@ -17,15 +17,19 @@ class DetailsMarketRepositoryImp(
         return dao.getDetailMarket(id)
     }
 
-    override suspend fun addProduct(product: MarketDetail) {
-        dao.addDetailMarket(product)
+    override suspend fun addProduct(product: MarketDetail): Long {
+        return dao.addDetailMarket(product)
+    }
+
+    override suspend fun deleteProducts(idMarket: Long) {
+        dao.deleteDetailMarketByMarketId(idMarket)
     }
 
     override suspend fun deleteProduct(id: Long) {
         dao.deleteDetailMarket(id)
     }
 
-    override suspend fun updateProductByRate(list: List<MarketDetail>) {
+    override suspend fun addListProduct(list: List<MarketDetail>) {
         dao.addListDetailMarket(list)
     }
 

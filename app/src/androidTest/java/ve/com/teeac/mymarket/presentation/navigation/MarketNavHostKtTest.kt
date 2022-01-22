@@ -7,18 +7,21 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import androidx.test.platform.app.InstrumentationRegistry
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.*
 
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import ve.com.teeac.mymarket.R
 import ve.com.teeac.mymarket.di.AppModule
+import ve.com.teeac.mymarket.domain.model.AmountsSetup
 import ve.com.teeac.mymarket.domain.model.Market
 import ve.com.teeac.mymarket.domain.usecases.DetailsMarketUseCase
+import ve.com.teeac.mymarket.domain.usecases.setup_use_cases.SetupUseCase
 import ve.com.teeac.mymarket.presentation.MainActivity
 import javax.inject.Inject
 
@@ -35,8 +38,12 @@ class MarketNavHostKtTest {
     @get:Rule(order = 1)
     val composeRule = createAndroidComposeRule<MainActivity>()
 
+    private val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+
     @Inject
-    lateinit var useCase: DetailsMarketUseCase
+    lateinit var useCaseDetail: DetailsMarketUseCase
+    @Inject
+    lateinit var useCaseSetup: SetupUseCase
 
     private lateinit var navController: NavHostController
 
@@ -47,7 +54,8 @@ class MarketNavHostKtTest {
         hiltRule.inject()
 
         runBlocking{
-            useCase.addMarket(market)
+            useCaseDetail.addMarket(market)
+            useCaseSetup.addSetup(AmountsSetup(marketId = market.id))
         }
         composeRule.setContent {
             navController = rememberNavController()
@@ -67,8 +75,8 @@ class MarketNavHostKtTest {
         composeRule.onNodeWithContentDescription("Add Market").performClick()
 
         composeRule.onNodeWithContentDescription("Detail Market Screen").assertIsDisplayed()
-        composeRule.onNodeWithContentDescription("Back").assertIsDisplayed()
-        composeRule.onNodeWithContentDescription("Back").performClick()
+        composeRule.onNodeWithContentDescription(appContext.getString(R.string.button_back)).assertIsDisplayed()
+        composeRule.onNodeWithContentDescription(appContext.getString(R.string.button_back)).performClick()
 
         composeRule.onNodeWithContentDescription("Market Screen").assertIsDisplayed()
     }
@@ -80,8 +88,8 @@ class MarketNavHostKtTest {
         composeRule.onNodeWithTag(market.id.toString()).performClick()
 
         composeRule.onNodeWithContentDescription("Detail Market Screen").assertIsDisplayed()
-        composeRule.onNodeWithText("Mercado 1").assertIsDisplayed()
-        composeRule.onNodeWithContentDescription("Back").performClick()
+        composeRule.onNodeWithText("${appContext.getString(R.string.app_name)} 1").assertIsDisplayed()
+        composeRule.onNodeWithContentDescription(appContext.getString(R.string.button_back)).performClick()
 
         composeRule.onNodeWithContentDescription("Market Screen").assertIsDisplayed()
 

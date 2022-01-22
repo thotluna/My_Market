@@ -9,7 +9,6 @@ import ve.com.teeac.mymarket.presentation.InvalidPropertyApp
 import ve.com.teeac.mymarket.presentation.marketdetails.NoteTextFieldState
 import ve.com.teeac.mymarket.presentation.marketdetails.NumberTextFieldState
 import ve.com.teeac.mymarket.utils.roundOffDecimal
-import kotlin.math.roundToInt
 
 class ProductFormController(
     private val useCase: ProductUseCase,
@@ -135,7 +134,7 @@ class ProductFormController(
     suspend fun loadProduct(id: Long) {
         getProduct(id)?.let {
             set(it)
-        } ?: throw InvalidPropertyApp(InvalidPropertyApp.PRODUCT_DO_NOT_EXIST)
+        } ?: throw InvalidPropertyApp(InvalidPropertyApp.PRODUCT_DOES_NOT_EXIST)
     }
 
     private suspend fun getProduct(id: Long): MarketDetail? {

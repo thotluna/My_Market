@@ -9,7 +9,7 @@ class UpdateProductByRate(
     suspend operator fun invoke(rate: Double, marketId: Long) {
         val list = repository.getAllProducts(marketId).first()
 
-        repository.updateProductByRate(
+        repository.addListProduct(
             list.map{
                     it.addRate(rate)
             }

@@ -14,13 +14,16 @@ interface DetailMarketDao {
     suspend fun getDetailMarket(id: Long): MarketDetail?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addDetailMarket(marketDetail: MarketDetail)
+    suspend fun addDetailMarket(marketDetail: MarketDetail): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addListDetailMarket(list: List<MarketDetail>)
 
     @Query("DELETE FROM marketdetail WHERE id = :id")
     suspend fun deleteDetailMarket(id: Long)
+
+    @Query("DELETE FROM marketdetail WHERE marketId = :marketId")
+    suspend fun deleteDetailMarketByMarketId(marketId: Long)
 
     @Query("UPDATE marketdetail SET isActive = :activated WHERE id = :id")
     suspend fun changeActivated(id: Long, activated: Boolean)

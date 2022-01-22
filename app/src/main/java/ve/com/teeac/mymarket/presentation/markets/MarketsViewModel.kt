@@ -47,13 +47,11 @@ class MarketsViewModel @Inject constructor(
 
     private fun getMarkets() {
         getMarketsJob?.cancel()
-        println(Thread.currentThread().name + " viewmodel")
         getMarketsJob = useCase.getMarkets()
             .onEach { markets ->
                 _state.value = state.value.copy(
                     markets = markets
                 )
-                println(Thread.currentThread().name + " scope viewmodel")
             }.launchIn(viewModelScope)
 
     }

@@ -70,7 +70,6 @@ class MarketsViewModelTest {
         val useCases = MarketUseCases(addMarkets, getMarkets)
 
         every { useCases.getMarkets() } answers {
-            println(Thread.currentThread().name + " test coAnswer")
             flow {
                 emit(listMarkets)
             }
@@ -84,7 +83,6 @@ class MarketsViewModelTest {
             )
             /*TODO: delete delay*/
             delay(500L)
-            println(Thread.currentThread().name + " Test")
             assertThat(viewModel.state.value.markets).isEqualTo(listMarkets)
         }
 

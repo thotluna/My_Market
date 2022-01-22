@@ -8,6 +8,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.test.platform.app.InstrumentationRegistry
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
@@ -15,6 +16,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import ve.com.teeac.mymarket.R
 import ve.com.teeac.mymarket.di.AppModule
 import ve.com.teeac.mymarket.domain.model.MarketDetail
 import ve.com.teeac.mymarket.presentation.MainActivity
@@ -36,6 +38,8 @@ class DetailsMarketScreenKtTest {
 
     @get:Rule(order = 1)
     val composeRule = createAndroidComposeRule<MainActivity>()
+
+    private val appContext = InstrumentationRegistry.getInstrumentation().targetContext
 
     @ExperimentalMaterialApi
     @Before
@@ -61,21 +65,26 @@ class DetailsMarketScreenKtTest {
 
     @Test
     fun initialBasic() {
-        composeRule.onNodeWithContentDescription("Back")
-        composeRule.onNodeWithText("Mercado -1").assertIsDisplayed()
-        composeRule.onNodeWithContentDescription("Open Setup Section").assertIsDisplayed()
-        composeRule.onNodeWithContentDescription("Open Product Section").assertIsDisplayed()
-        composeRule.onNodeWithContentDescription("AmountSetupForm").assertDoesNotExist()
-        composeRule.onNodeWithContentDescription("ProductForm").assertDoesNotExist()
+        composeRule.onNodeWithContentDescription(appContext.getString(R.string.button_back))
+        composeRule.onNodeWithText("${appContext.getString(R.string.app_name)} -1").assertIsDisplayed()
+        composeRule.onNodeWithContentDescription(appContext.getString(R.string.button_open_hide_setup_section)).assertIsDisplayed()
+        composeRule.onNodeWithContentDescription(appContext.resources
+            .getString(R.string.button_open_product_section))
+            .assertIsDisplayed()
+        composeRule.onNodeWithContentDescription(appContext.getString(R.string.setup_section)).assertDoesNotExist()
+        composeRule.onNodeWithContentDescription(appContext.getString(R.string.product_form_section)).assertDoesNotExist()
     }
 
     @Test
     fun saveNewSetup() {
-        composeRule.onNodeWithContentDescription("AmountSetupForm").assertDoesNotExist()
-        composeRule.onNodeWithContentDescription("Open Setup Section").assertIsDisplayed()
+        composeRule.onNodeWithContentDescription(appContext.getString(R.string.setup_section)).assertDoesNotExist()
+        composeRule.onNodeWithContentDescription(appContext
+            .getString(R.string.button_open_hide_setup_section)).assertIsDisplayed()
 
-        composeRule.onNodeWithContentDescription("Open Setup Section").performClick()
-        composeRule.onNodeWithContentDescription("AmountSetupForm").assertIsDisplayed()
+        composeRule.onNodeWithContentDescription(appContext
+            .getString(R.string.button_open_hide_setup_section)).performClick()
+        composeRule.onNodeWithContentDescription(appContext
+            .getString(R.string.setup_section)).assertIsDisplayed()
         composeRule.onNodeWithText("Taza").assertIsDisplayed()
         composeRule.onNodeWithText("Bs").assertIsDisplayed()
         composeRule.onNodeWithText("$").assertIsDisplayed()
@@ -85,18 +94,20 @@ class DetailsMarketScreenKtTest {
         composeRule.onNodeWithText("500").assertIsDisplayed()
 
         composeRule.onNodeWithContentDescription("Guardar setup").performClick()
-        composeRule.onNodeWithContentDescription("AmountSetupForm").assertDoesNotExist()
+        composeRule.onNodeWithContentDescription(appContext.getString(R.string.setup_section)).assertDoesNotExist()
     }
 
     @Test
     fun saveNewProductWithoutSetup() {
 
 
-        composeRule.onNodeWithContentDescription("ProductForm").assertDoesNotExist()
-        composeRule.onNodeWithContentDescription("Open Product Section").assertIsDisplayed()
+        composeRule.onNodeWithContentDescription(appContext.getString(R.string.product_form_section)).assertDoesNotExist()
+        composeRule.onNodeWithContentDescription(appContext.resources
+            .getString(R.string.button_open_product_section)).assertIsDisplayed()
 
-        composeRule.onNodeWithContentDescription("Open Product Section").performClick()
-        composeRule.onNodeWithContentDescription("ProductForm").assertIsDisplayed()
+        composeRule.onNodeWithContentDescription(appContext.resources
+            .getString(R.string.button_open_product_section)).performClick()
+        composeRule.onNodeWithContentDescription(appContext.getString(R.string.product_form_section)).assertIsDisplayed()
 
         composeRule.onNodeWithText("Cantidad").assertIsDisplayed()
         composeRule.onNodeWithText("Descripción").assertIsDisplayed()
@@ -130,7 +141,6 @@ class DetailsMarketScreenKtTest {
         composeRule.onNodeWithTag(TestTags.AMOUNT_DOLLAR_FIELD).assert(hasText(""))
         composeRule.onNodeWithTag(TestTags.AMOUNT_BS_FIELD).assert(hasText(""))
 
-        composeRule.onRoot(useUnmergedTree = true).printToLog("TAG_DETAIL_MARKET")
 
         composeRule.onNodeWithTag(TestTags.LIST_PRODUCT)
             .onChildren()
@@ -151,7 +161,8 @@ class DetailsMarketScreenKtTest {
 
     @Test
     fun updateProductByRateSetup() {
-        composeRule.onNodeWithContentDescription("Open Product Section").performClick()
+        composeRule.onNodeWithContentDescription(appContext.resources
+            .getString(R.string.button_open_product_section)).performClick()
         composeRule.onNodeWithContentDescription("Mantener seccion").performClick()
         composeRule.onNodeWithText("Cantidad").performTextInput("2")
         composeRule.onNodeWithText("Descripción").performTextInput("papa")
@@ -172,7 +183,8 @@ class DetailsMarketScreenKtTest {
             .assert(hasText("5.60 $"))
             .assertHasClickAction()
 
-        composeRule.onNodeWithContentDescription("Open Setup Section").performClick()
+        composeRule.onNodeWithContentDescription(appContext
+            .getString(R.string.button_open_hide_setup_section)).performClick()
         composeRule.onNodeWithTag(TestTags.RATE_FIELD).performTextInput("5")
         composeRule.onNodeWithTag(TestTags.MAX_DOLLAR).performTextInput("100")
         composeRule.onNodeWithContentDescription("Guardar setup").performClick()
@@ -191,7 +203,8 @@ class DetailsMarketScreenKtTest {
 
     @Test
     fun editProductWithoutRate() {
-        composeRule.onNodeWithContentDescription("Open Product Section").performClick()
+        composeRule.onNodeWithContentDescription(appContext.resources
+            .getString(R.string.button_open_product_section)).performClick()
         composeRule.onNodeWithContentDescription("Mantener seccion").performClick()
         composeRule.onNodeWithText("Cantidad").performTextInput("2")
         composeRule.onNodeWithText("Descripción").performTextInput("papa")
@@ -231,12 +244,14 @@ class DetailsMarketScreenKtTest {
     @Test
     fun editProductWithRate() {
 
-        composeRule.onNodeWithContentDescription("Open Setup Section").performClick()
+        composeRule.onNodeWithContentDescription(appContext
+            .getString(R.string.button_open_hide_setup_section)).performClick()
         composeRule.onNodeWithTag(TestTags.RATE_FIELD).performTextInput("5")
         composeRule.onNodeWithTag(TestTags.MAX_DOLLAR).performTextInput("100")
         composeRule.onNodeWithContentDescription("Guardar setup").performClick()
 
-        composeRule.onNodeWithContentDescription("Open Product Section").performClick()
+        composeRule.onNodeWithContentDescription(appContext.resources
+                .getString(R.string.button_open_product_section)).performClick()
         composeRule.onNodeWithContentDescription("Mantener seccion").performClick()
         composeRule.onNodeWithText("Cantidad").performTextInput("2")
         composeRule.onNodeWithText("Descripción").performTextInput("papa")
@@ -277,7 +292,8 @@ class DetailsMarketScreenKtTest {
     @Test
     fun deleteProduct() {
 
-        composeRule.onNodeWithContentDescription("Open Product Section").performClick()
+        composeRule.onNodeWithContentDescription(appContext.resources
+            .getString(R.string.button_open_product_section)).performClick()
         composeRule.onNodeWithText("Cantidad").performTextInput("2")
         composeRule.onNodeWithText("Descripción").performTextInput("papa")
         composeRule.onNodeWithText("$").performTextInput("2.8")
@@ -342,7 +358,6 @@ class DetailsMarketScreenKtTest {
             )
         )
 
-        composeRule.onAllNodes(hasContentDescription("Totals")).printToLog("TAG")
 
         composeRule.onNodeWithContentDescription("Totals")
             .onChildren()
@@ -350,12 +365,14 @@ class DetailsMarketScreenKtTest {
             .assertAny(hasText("0.00 Bs"))
             .assertAny(hasText("0.00 Bs"))
 
-        composeRule.onNodeWithContentDescription("Open Setup Section").performClick()
+        composeRule.onNodeWithContentDescription(appContext
+            .getString(R.string.button_open_hide_setup_section)).performClick()
         composeRule.onNodeWithTag(TestTags.RATE_FIELD).performTextInput("5")
         composeRule.onNodeWithTag(TestTags.MAX_DOLLAR).performTextInput(maxDollar.toString())
         composeRule.onNodeWithContentDescription("Guardar setup").performClick()
 
-        composeRule.onNodeWithContentDescription("Open Product Section").performClick()
+        composeRule.onNodeWithContentDescription(appContext.resources
+            .getString(R.string.button_open_product_section)).performClick()
         composeRule.onNodeWithContentDescription("Mantener seccion").performClick()
         composeRule.onNodeWithTag(TestTags.QUALITY_FIELD)
             .performTextInput(listProduct[0].quantity.toString())
@@ -370,7 +387,6 @@ class DetailsMarketScreenKtTest {
             .assertAny(hasText("6.25 Bs"))
             .assertAny(hasText("1.25 $"))
 
-        composeRule.onRoot().printToLog("My Tag")
 
         composeRule.onNodeWithTag(TestTags.QUALITY_FIELD)
             .performTextInput(listProduct[1].quantity.toString())
@@ -412,8 +428,9 @@ class DetailsMarketScreenKtTest {
             unitAmount = 50.0,
             amount = 50.0
         )
-        composeRule.onNodeWithContentDescription("Open Product Section").performClick()
-        composeRule.onNodeWithContentDescription("ProductForm").assertIsDisplayed()
+        composeRule.onNodeWithContentDescription(appContext.resources
+            .getString(R.string.button_open_product_section)).performClick()
+        composeRule.onNodeWithContentDescription(appContext.getString(R.string.product_form_section)).assertIsDisplayed()
         composeRule.onNodeWithContentDescription("Mantener seccion").performClick()
 
         composeRule.onNodeWithTag(TestTags.QUALITY_FIELD)
@@ -422,7 +439,7 @@ class DetailsMarketScreenKtTest {
             .performTextInput(product.description)
         composeRule.onNodeWithTag(TestTags.AMOUNT_DOLLAR_FIELD).performImeAction()
 
-        composeRule.onNodeWithContentDescription("ProductForm").assertIsDisplayed()
+        composeRule.onNodeWithContentDescription(appContext.getString(R.string.product_form_section)).assertIsDisplayed()
 
         composeRule.onNodeWithContentDescription("Mantener seccion").performClick()
 
@@ -432,7 +449,7 @@ class DetailsMarketScreenKtTest {
             .performTextInput(product.description)
         composeRule.onNodeWithTag(TestTags.AMOUNT_DOLLAR_FIELD).performImeAction()
 
-        composeRule.onNodeWithContentDescription("ProductForm").assertDoesNotExist()
+        composeRule.onNodeWithContentDescription(appContext.getString(R.string.product_form_section)).assertDoesNotExist()
 
     }
 

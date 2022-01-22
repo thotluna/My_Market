@@ -15,4 +15,10 @@ interface AmountsSetupDao {
     @Query("SELECT * FROM amountssetup WHERE marketId = :marketId")
     suspend fun getAmountsSetup(marketId: Long): AmountsSetup?
 
+    @Query("DELETE FROM amountssetup WHERE id = :id")
+    suspend fun delete(id: Long)
+
+    @Query("DELETE FROM amountssetup WHERE marketId = :marketId")
+    suspend fun deleteByMarketId(marketId: Long)
+
 }

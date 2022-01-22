@@ -6,4 +6,9 @@
     <string name="markets_empty">Todavia no se ha realizado el primer mercado</string>
     <string name="add_market">Add Market</string>
     <string name="word_testing">Taza de Conversion</string>
+    <string name="button_open_product_section">Button show and hide product section</string>
+    <string name="button_open_hide_setup_section">Open Setup Section</string>
+    <string name="setup_section">AmountSetupForm</string>
+    <string name="button_back">Back</string>
+    <string name="product_form_section">ProductForm</string>
 </resources>

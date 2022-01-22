@@ -5,6 +5,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.test.platform.app.InstrumentationRegistry
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
@@ -14,6 +15,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import ve.com.teeac.mymarket.R
 import ve.com.teeac.mymarket.di.AppModule
 import ve.com.teeac.mymarket.domain.model.AmountsSetup
 import ve.com.teeac.mymarket.domain.usecases.setup_use_cases.SetupUseCase
@@ -38,6 +40,8 @@ class AmountsSetupFormKtTest {
 
     @get:Rule(order = 1)
     val composeRule = createAndroidComposeRule<MainActivity>()
+
+    private val appContext = InstrumentationRegistry.getInstrumentation().targetContext
 
     @Inject
     lateinit var useCase: SetupUseCase
@@ -80,7 +84,7 @@ class AmountsSetupFormKtTest {
 
     @Test
     fun initialCompose(){
-        composeRule.onNodeWithContentDescription("AmountSetupForm").assertIsDisplayed()
+        composeRule.onNodeWithContentDescription(appContext.getString(R.string.setup_section)).assertIsDisplayed()
         composeRule.onNodeWithText("Taza").assertIsDisplayed()
         composeRule.onNodeWithText("Bs").assertIsDisplayed()
         composeRule.onNodeWithText("$").assertIsDisplayed()

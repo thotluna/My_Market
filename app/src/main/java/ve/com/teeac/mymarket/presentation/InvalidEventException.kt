@@ -8,6 +8,8 @@ class InvalidEventException(message: String):Exception(message){
 
 class InvalidPropertyApp(message: String): Exception(message){
     companion object{
-        const val PRODUCT_DO_NOT_EXIST = " Product does not exist"
+        const val PRODUCT_DOES_NOT_EXIST = " Product does not exist"
+        const val MARKET_DOES_NOT_EXIST = " Market does not exist"
+        const val AMOUNTS_SETUP_DOES_NOT_EXIST = " Amount setup does not exist"
     }
 }

@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -57,6 +58,8 @@ fun DetailsMarketScreen(
 
     val scaffoldState = rememberScaffoldState()
 
+    val context = LocalContext.current
+
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
@@ -82,7 +85,7 @@ fun DetailsMarketScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.button_back)
                         )
                     }
                     Spacer(modifier = Modifier.width(8.dp))
@@ -94,7 +97,7 @@ fun DetailsMarketScreen(
                         .weight(1f),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "Mercado ${viewModel.state.value.marketId}")
+                    Text(text = "${context.getString(R.string.app_name)} ${viewModel.state.value.marketId}")
                 }
 
                 Row(
@@ -109,7 +112,7 @@ fun DetailsMarketScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Settings,
-                            contentDescription = "Open Setup Section"
+                            contentDescription = stringResource(R.string.button_open_hide_setup_section)
                         )
                     }
                     Spacer(modifier = Modifier.widthIn(4.dp))
@@ -121,7 +124,7 @@ fun DetailsMarketScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.ShoppingCart,
-                            contentDescription = "Open Product Section"
+                            contentDescription = stringResource(R.string.button_open_product_section)
                         )
                     }
                 }

@@ -18,14 +18,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusOrder
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ve.com.teeac.mymarket.R
 import ve.com.teeac.mymarket.presentation.components.MyMarketApp
 import ve.com.teeac.mymarket.presentation.marketdetails.NumberTextFieldState
 import ve.com.teeac.mymarket.presentation.marketdetails.components.NumberField
@@ -43,13 +46,14 @@ fun AmountSetupForm(
     val focusManager = LocalFocusManager.current
     val (secondSetup, thirdSetup, fourthSetup) = FocusRequester.createRefs()
     val keyboardController = LocalSoftwareKeyboardController.current
+    val context = LocalContext.current
 
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .semantics { contentDescription = "AmountSetupForm" },
+            .semantics { contentDescription = context.getString(R.string.setup_section) },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
