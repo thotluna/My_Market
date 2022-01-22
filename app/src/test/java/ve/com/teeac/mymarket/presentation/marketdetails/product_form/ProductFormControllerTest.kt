@@ -13,6 +13,7 @@ import org.junit.Before
 import org.junit.Test
 import ve.com.teeac.mymarket.domain.model.MarketDetail
 import ve.com.teeac.mymarket.domain.usecases.product_use_cases.*
+import ve.com.teeac.mymarket.utils.roundOffDecimal
 import kotlin.math.roundToInt
 
 @ExperimentalCoroutinesApi
@@ -76,6 +77,48 @@ class ProductFormControllerTest {
     }
 
     @Test
+    fun enteredAmountBolivaresVsDollar(){
+        controller.onEvent(ProductEvent.EnteredAmountBs(5))
+        assertThat(controller.amountDollar.value.number).isNull()
+
+        controller.clear()
+
+        setRate(5.0)
+
+        controller.onEvent(ProductEvent.EnteredAmountBs(5))
+        assertThat(controller.amountDollar.value.number).isEqualTo(1.0)
+
+        controller.clear()
+
+        controller.onEvent(ProductEvent.EnteredAmountBs(100))
+        assertThat(controller.amountDollar.value.number).isEqualTo(20.0)
+
+        controller.onEvent(ProductEvent.EnteredAmountBs(0))
+        assertThat(controller.amountDollar.value.number).isEqualTo(0.0)
+
+        controller.clear()
+
+        controller.onEvent(ProductEvent.EnteredAmountBs(null))
+        assertThat(controller.amountDollar.value.number).isNull()
+
+        controller.clear()
+
+        controller.onEvent(ProductEvent.EnteredAmountBs(5.11))
+        assertThat(controller.amountDollar.value.number).isEqualTo(1.02)
+
+        controller.clear()
+
+        controller.onEvent(ProductEvent.EnteredAmountBs(5.33))
+        assertThat(controller.amountDollar.value.number).isEqualTo(1.07)
+
+        controller.clear()
+
+        controller.onEvent(ProductEvent.EnteredAmountBs(1500))
+        assertThat(controller.amountDollar.value.number).isEqualTo(300.0)
+
+    }
+
+    @Test
     fun loadProductExist() {
         coEvery { useCase.getProduct(any()) } coAnswers { product }
 
@@ -112,8 +155,8 @@ class ProductFormControllerTest {
         val rate = 3
         val expected = product.copy(
             id = null,
-            unitAmountDollar = ((product.unitAmount / rate) * 1000.0).roundToInt() / 1000.0,
-            amountDollar =  ((((product.unitAmount / rate)) * 1000.0).roundToInt() / 1000.0) * product.quantity
+            unitAmountDollar = roundOffDecimal(product.unitAmount / rate.toDouble())!!,
+            amountDollar =  roundOffDecimal(product.unitAmount / rate)!! * product.quantity
         )
         val sendProduct = slot<MarketDetail>()
         coEvery { useCase.addProduct(capture(sendProduct)) } coAnswers { product.id }
@@ -237,7 +280,7 @@ class ProductFormControllerTest {
     private fun setRate(number: Number) {
         coEvery { useCase.updateProducts(any(), any()) } returns Unit
         controller.loadIdMarket(product.marketId)
-        controller.onEvent(ProductEvent.UpdateRate(number))
+        controller.updateRate(ProductEvent.UpdateRate(number))
     }
 
 

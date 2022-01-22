@@ -7,11 +7,9 @@ buildscript {
         core_version = '1.7.0'
         coroutine_version = '1.6.0'
         espresso_version = '3.4.0'
-        hilt_android_version_old = '2.37'
         hilt_android_version = '2.40.5'
         hilt_compiler_version = '1.0.0'
         hilt_navigation_version = '1.0.0-rc01'
-        hilt_version_old = '2.38.1'
         hilt_version = '2.40.5'
         hilt_viewmodel_version = '1.0.0-alpha03'
         jacocoVersion = '0.8.7'
@@ -31,7 +29,7 @@ buildscript {
     dependencies {
         classpath "com.android.tools.build:gradle:7.0.4"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31"
-        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.40.5'
+        classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_android_version"
         classpath "org.jacoco:org.jacoco.core:$jacocoVersion"
 
         // NOTE: Do not place your application dependencies here; they belong

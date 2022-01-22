@@ -142,8 +142,8 @@ class SetupController(
     }
 
     private fun changeRate(number: Number?) {
-        number?.let{ number ->
-            if (number == rate.value.number || number.toDouble() <= 0) return
+        number?.let{ numbers ->
+            if (numbers == rate.value.number || numbers.toDouble() <= 0) return
         }
         _rate.value = rate.value.copy(number = number)
     }

@@ -134,8 +134,6 @@ private fun AmountSetupFormPreview() {
     val amountsDollarState =
         AmountSetupState(field = NumberTextFieldState(number = 5.00, title = "$"), onChange = {})
 
-    val idSetupSectionVisible = remember { mutableStateOf(false) }
-
     MyMarketApp {
         AmountSetupForm(
             converterState = converterState,

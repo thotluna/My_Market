@@ -8,7 +8,6 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.google.common.truth.Truth
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
@@ -22,7 +21,6 @@ import ve.com.teeac.mymarket.presentation.MainActivity
 import ve.com.teeac.mymarket.presentation.components.MyMarketApp
 import ve.com.teeac.mymarket.presentation.navigation.Screen
 import ve.com.teeac.mymarket.utils.TestTags
-
 
 @ExperimentalMaterialApi
 @ExperimentalAnimationApi
@@ -93,6 +91,7 @@ class DetailsMarketScreenKtTest {
     @Test
     fun saveNewProductWithoutSetup() {
 
+
         composeRule.onNodeWithContentDescription("ProductForm").assertDoesNotExist()
         composeRule.onNodeWithContentDescription("Open Product Section").assertIsDisplayed()
 
@@ -103,6 +102,8 @@ class DetailsMarketScreenKtTest {
         composeRule.onNodeWithText("Descripción").assertIsDisplayed()
         composeRule.onNodeWithText("Bs").assertIsDisplayed()
         composeRule.onNodeWithText("$").assertIsDisplayed()
+
+        composeRule.onNodeWithContentDescription("Mantener seccion").performClick()
 
 
         composeRule.onNodeWithText("Cantidad").performTextInput("2")
@@ -129,95 +130,88 @@ class DetailsMarketScreenKtTest {
         composeRule.onNodeWithTag(TestTags.AMOUNT_DOLLAR_FIELD).assert(hasText(""))
         composeRule.onNodeWithTag(TestTags.AMOUNT_BS_FIELD).assert(hasText(""))
 
-        composeRule.apply {
-            onNodeWithTag(TestTags.LIST_PRODUCT)
-                .onChildren()
-                .assertCountEquals(1)
+        composeRule.onRoot(useUnmergedTree = true).printToLog("TAG_DETAIL_MARKET")
 
-            onNodeWithTag(TestTags.LIST_PRODUCT)
-                .onChildren()
-                .onFirst()
-                .assert(hasText("2.0"))
-                .assert(hasText("papa"))
-                .assert(hasText("Por Unidad"))
-                .assert(hasText("2.80 $"))
-                .assert(hasText("0.00 Bs"))
-                .assert(hasText("Total"))
-                .assert(hasText("5.60 $"))
-                .assertHasClickAction()
-        }
+        composeRule.onNodeWithTag(TestTags.LIST_PRODUCT)
+            .onChildren()
+            .assertCountEquals(1)
+
+        composeRule.onNodeWithContentDescription("item papa")
+            .assertHasClickAction()
+            .assert(hasText("2.0"))
+            .assert(hasText("papa"))
+            .assert(hasText("Por Unidad"))
+            .assert(hasText("2.80 $"))
+            .assert(hasText("0.00 Bs"))
+            .assert(hasText("Total"))
+            .assert(hasText("5.60 $"))
+
+
     }
 
     @Test
-    fun updateProductByRateSetup(){
+    fun updateProductByRateSetup() {
         composeRule.onNodeWithContentDescription("Open Product Section").performClick()
+        composeRule.onNodeWithContentDescription("Mantener seccion").performClick()
         composeRule.onNodeWithText("Cantidad").performTextInput("2")
         composeRule.onNodeWithText("Descripción").performTextInput("papa")
         composeRule.onNodeWithText("$").performTextInput("2.8")
         composeRule.onNodeWithTag(TestTags.AMOUNT_DOLLAR_FIELD).performImeAction()
 
-        composeRule.apply {
-            onNodeWithTag(TestTags.LIST_PRODUCT)
-                .onChildren()
-                .assertCountEquals(1)
+        composeRule.onNodeWithTag(TestTags.LIST_PRODUCT)
+            .onChildren()
+            .assertCountEquals(1)
 
-            onNodeWithTag(TestTags.LIST_PRODUCT)
-                .onChildren()
-                .onFirst()
-                .assert(hasText("2.0"))
-                .assert(hasText("papa"))
-                .assert(hasText("Por Unidad"))
-                .assert(hasText("2.80 $"))
-                .assert(hasText("0.00 Bs"))
-                .assert(hasText("Total"))
-                .assert(hasText("5.60 $"))
-                .assertHasClickAction()
-        }
+        composeRule.onNodeWithContentDescription("item papa")
+            .assert(hasText("2.0"))
+            .assert(hasText("papa"))
+            .assert(hasText("Por Unidad"))
+            .assert(hasText("2.80 $"))
+            .assert(hasText("0.00 Bs"))
+            .assert(hasText("Total"))
+            .assert(hasText("5.60 $"))
+            .assertHasClickAction()
 
         composeRule.onNodeWithContentDescription("Open Setup Section").performClick()
         composeRule.onNodeWithTag(TestTags.RATE_FIELD).performTextInput("5")
         composeRule.onNodeWithTag(TestTags.MAX_DOLLAR).performTextInput("100")
         composeRule.onNodeWithContentDescription("Guardar setup").performClick()
 
-        composeRule.onNodeWithTag(TestTags.LIST_PRODUCT)
-                .onChildren()
-                .onFirst()
-                .assert(hasText("2.0"))
-                .assert(hasText("papa"))
-                .assert(hasText("Por Unidad"))
-                .assert(hasText("2.80 $"))
-                .assert(hasText("14.00 Bs"))
-                .assert(hasText("Total"))
-                .assert(hasText("5.60 $"))
-                .assert(hasText("28.00 Bs"))
-                .assertHasClickAction()
+        composeRule.onNodeWithContentDescription("item papa")
+            .assert(hasText("2.0"))
+            .assert(hasText("papa"))
+            .assert(hasText("Por Unidad"))
+            .assert(hasText("2.80 $"))
+            .assert(hasText("14.00 Bs"))
+            .assert(hasText("Total"))
+            .assert(hasText("5.60 $"))
+            .assert(hasText("28.00 Bs"))
+            .assertHasClickAction()
     }
 
     @Test
-    fun editProductWithoutRate(){
+    fun editProductWithoutRate() {
         composeRule.onNodeWithContentDescription("Open Product Section").performClick()
+        composeRule.onNodeWithContentDescription("Mantener seccion").performClick()
         composeRule.onNodeWithText("Cantidad").performTextInput("2")
         composeRule.onNodeWithText("Descripción").performTextInput("papa")
         composeRule.onNodeWithText("Bs").performTextInput("2.8")
         composeRule.onNodeWithTag(TestTags.AMOUNT_DOLLAR_FIELD).performImeAction()
 
-        composeRule.apply {
-            onNodeWithTag(TestTags.LIST_PRODUCT)
-                .onChildren()
-                .assertCountEquals(1)
+        composeRule.onNodeWithTag(TestTags.LIST_PRODUCT)
+            .onChildren()
+            .assertCountEquals(1)
 
-            onNodeWithTag(TestTags.LIST_PRODUCT)
-                .onChildren()
-                .onFirst()
-                .assert(hasText("2.0"))
-                .assert(hasText("papa"))
-                .assert(hasText("Por Unidad"))
-                .assert(hasText("2.80 Bs"))
-                .assert(hasText("0.00 $"))
-                .assert(hasText("Total"))
-                .assert(hasText("5.60 Bs"))
-                .assertHasClickAction()
-        }
+        composeRule.onNodeWithContentDescription("item papa")
+            .assert(hasText("2.0"))
+            .assert(hasText("papa"))
+            .assert(hasText("Por Unidad"))
+            .assert(hasText("2.80 Bs"))
+            .assert(hasText("0.00 $"))
+            .assert(hasText("Total"))
+            .assert(hasText("5.60 Bs"))
+            .assertHasClickAction()
+
 
         composeRule.onNodeWithTag(TestTags.QUALITY_FIELD).assert(hasText(text = ""))
         composeRule.onNodeWithTag(TestTags.DESCRIPTION_FIELD).assert(hasText(""))
@@ -235,7 +229,7 @@ class DetailsMarketScreenKtTest {
     }
 
     @Test
-    fun editProductWithRate(){
+    fun editProductWithRate() {
 
         composeRule.onNodeWithContentDescription("Open Setup Section").performClick()
         composeRule.onNodeWithTag(TestTags.RATE_FIELD).performTextInput("5")
@@ -243,19 +237,17 @@ class DetailsMarketScreenKtTest {
         composeRule.onNodeWithContentDescription("Guardar setup").performClick()
 
         composeRule.onNodeWithContentDescription("Open Product Section").performClick()
+        composeRule.onNodeWithContentDescription("Mantener seccion").performClick()
         composeRule.onNodeWithText("Cantidad").performTextInput("2")
         composeRule.onNodeWithText("Descripción").performTextInput("papa")
         composeRule.onNodeWithText("Bs").performTextInput("2.8")
         composeRule.onNodeWithTag(TestTags.AMOUNT_DOLLAR_FIELD).performImeAction()
 
-        composeRule.apply {
-            onNodeWithTag(TestTags.LIST_PRODUCT)
+        composeRule.onNodeWithTag(TestTags.LIST_PRODUCT)
                 .onChildren()
                 .assertCountEquals(1)
 
-            onNodeWithTag(TestTags.LIST_PRODUCT)
-                .onChildren()
-                .onFirst()
+        composeRule.onNodeWithContentDescription("item papa")
                 .assert(hasText("2.0"))
                 .assert(hasText("papa"))
                 .assert(hasText("Por Unidad"))
@@ -265,7 +257,7 @@ class DetailsMarketScreenKtTest {
                 .assert(hasText("5.60 Bs"))
                 .assert(hasText("1.12 $"))
                 .assertHasClickAction()
-        }
+
 
         composeRule.onNodeWithTag(TestTags.QUALITY_FIELD).assert(hasText(text = ""))
         composeRule.onNodeWithTag(TestTags.DESCRIPTION_FIELD).assert(hasText(""))
@@ -283,7 +275,7 @@ class DetailsMarketScreenKtTest {
     }
 
     @Test
-    fun deleteProduct(){
+    fun deleteProduct() {
 
         composeRule.onNodeWithContentDescription("Open Product Section").performClick()
         composeRule.onNodeWithText("Cantidad").performTextInput("2")
@@ -296,9 +288,7 @@ class DetailsMarketScreenKtTest {
                 .onChildren()
                 .assertCountEquals(1)
 
-            onNodeWithTag(TestTags.LIST_PRODUCT)
-                .onChildren()
-                .onFirst()
+            composeRule.onNodeWithContentDescription("item papa")
                 .assert(hasText("2.0"))
                 .assert(hasText("papa"))
                 .assert(hasText("Por Unidad"))
@@ -324,7 +314,7 @@ class DetailsMarketScreenKtTest {
     }
 
     @Test
-    fun validateTotals(){
+    fun validateTotals() {
 
 
         val maxDollar = 5.0
@@ -366,9 +356,13 @@ class DetailsMarketScreenKtTest {
         composeRule.onNodeWithContentDescription("Guardar setup").performClick()
 
         composeRule.onNodeWithContentDescription("Open Product Section").performClick()
-        composeRule.onNodeWithTag(TestTags.QUALITY_FIELD).performTextInput(listProduct[0].quantity.toString())
-        composeRule.onNodeWithTag(TestTags.DESCRIPTION_FIELD).performTextInput(listProduct[0].description)
-        composeRule.onNodeWithTag(TestTags.AMOUNT_DOLLAR_FIELD).performTextInput(listProduct[0].unitAmountDollar.toString())
+        composeRule.onNodeWithContentDescription("Mantener seccion").performClick()
+        composeRule.onNodeWithTag(TestTags.QUALITY_FIELD)
+            .performTextInput(listProduct[0].quantity.toString())
+        composeRule.onNodeWithTag(TestTags.DESCRIPTION_FIELD)
+            .performTextInput(listProduct[0].description)
+        composeRule.onNodeWithTag(TestTags.AMOUNT_DOLLAR_FIELD)
+            .performTextInput(listProduct[0].unitAmountDollar.toString())
         composeRule.onNodeWithTag(TestTags.AMOUNT_DOLLAR_FIELD).performImeAction()
 
         composeRule.onNodeWithContentDescription("Totals")
@@ -378,9 +372,12 @@ class DetailsMarketScreenKtTest {
 
         composeRule.onRoot().printToLog("My Tag")
 
-        composeRule.onNodeWithTag(TestTags.QUALITY_FIELD).performTextInput(listProduct[1].quantity.toString())
-        composeRule.onNodeWithTag(TestTags.DESCRIPTION_FIELD).performTextInput(listProduct[1].description)
-        composeRule.onNodeWithTag(TestTags.AMOUNT_DOLLAR_FIELD).performTextInput(listProduct[1].unitAmountDollar.toString())
+        composeRule.onNodeWithTag(TestTags.QUALITY_FIELD)
+            .performTextInput(listProduct[1].quantity.toString())
+        composeRule.onNodeWithTag(TestTags.DESCRIPTION_FIELD)
+            .performTextInput(listProduct[1].description)
+        composeRule.onNodeWithTag(TestTags.AMOUNT_DOLLAR_FIELD)
+            .performTextInput(listProduct[1].unitAmountDollar.toString())
         composeRule.onNodeWithTag(TestTags.AMOUNT_DOLLAR_FIELD).performImeAction()
 
         composeRule.onNodeWithContentDescription("Totals")
@@ -388,9 +385,12 @@ class DetailsMarketScreenKtTest {
             .assertAny(hasText("22.50 Bs"))
             .assertAny(hasText("4.50 $"))
 
-        composeRule.onNodeWithTag(TestTags.QUALITY_FIELD).performTextInput(listProduct[2].quantity.toString())
-        composeRule.onNodeWithTag(TestTags.DESCRIPTION_FIELD).performTextInput(listProduct[2].description)
-        composeRule.onNodeWithTag(TestTags.AMOUNT_DOLLAR_FIELD).performTextInput(listProduct[2].unitAmountDollar.toString())
+        composeRule.onNodeWithTag(TestTags.QUALITY_FIELD)
+            .performTextInput(listProduct[2].quantity.toString())
+        composeRule.onNodeWithTag(TestTags.DESCRIPTION_FIELD)
+            .performTextInput(listProduct[2].description)
+        composeRule.onNodeWithTag(TestTags.AMOUNT_DOLLAR_FIELD)
+            .performTextInput(listProduct[2].unitAmountDollar.toString())
         composeRule.onNodeWithTag(TestTags.AMOUNT_DOLLAR_FIELD).performImeAction()
 
         composeRule.onNodeWithContentDescription("Totals")
@@ -399,15 +399,10 @@ class DetailsMarketScreenKtTest {
             .assertAny(hasText("7.75 $"))
 
 
-
-
-
-
-
     }
 
     @Test
-    fun persistentSection(){
+    fun persistentSection() {
 
         val product = MarketDetail(
             id = null,
