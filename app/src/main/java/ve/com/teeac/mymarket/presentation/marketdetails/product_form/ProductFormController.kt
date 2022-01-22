@@ -8,6 +8,7 @@ import ve.com.teeac.mymarket.domain.usecases.product_use_cases.ProductUseCase
 import ve.com.teeac.mymarket.presentation.InvalidPropertyApp
 import ve.com.teeac.mymarket.presentation.marketdetails.NoteTextFieldState
 import ve.com.teeac.mymarket.presentation.marketdetails.NumberTextFieldState
+import ve.com.teeac.mymarket.utils.roundOffDecimal
 import kotlin.math.roundToInt
 
 class ProductFormController(
@@ -104,6 +105,7 @@ class ProductFormController(
             useCase.addProduct(get(idMarket))
         }
         clear()
+        closeSectionIsRequired()
     }
 
     fun closeSectionIsRequired() {
@@ -112,7 +114,7 @@ class ProductFormController(
         }
     }
 
-    private fun updateRate(event: ProductEvent.UpdateRate) {
+    fun updateRate(event: ProductEvent.UpdateRate) {
         _rate.value = event.rate ?: 0.0
 
         idMarket.value?.let {
@@ -127,6 +129,7 @@ class ProductFormController(
         withContext(dispatcherIo) {
             useCase.deleteProduct(id)
         }
+
     }
 
     suspend fun loadProduct(id: Long) {
@@ -164,10 +167,21 @@ class ProductFormController(
     }
 
     private fun calculateAmountDollarsByRate(amount: Number?) {
-        if (amount == null || rate.value == null) return
-        if (amount.toDouble() <= 0) return
+        if (amount == null) {
+            _amountDollar.value = amountDollar.value.copy(
+                number =  null
+            )
+            return
+        }
+        if (amount == 0) {
+            _amountDollar.value = amountDollar.value.copy(
+                number =  0.0
+            )
+            return
+        }
+        if (amount.toDouble() < 0 || rate.value!!.toDouble() <=0) return
         _amountDollar.value = amountDollar.value.copy(
-            number = amount.toDouble() * rate.value!!.toDouble()
+            number =  roundOffDecimal(amount.toDouble() / rate.value!!.toDouble())
         )
     }
 

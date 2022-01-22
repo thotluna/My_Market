@@ -117,10 +117,10 @@ dependencies {
     kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hilt_android_version"
     kaptTest "com.google.dagger:hilt-android-compiler:$hilt_android_version"
     testImplementation "com.google.dagger:hilt-android-testing:$hilt_android_version"
-    kaptTest "com.google.dagger:hilt-android-compiler:$hilt_android_version"
 
     //AndroidTest
     androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_android_version"
+    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hilt_android_version"
     androidTestImplementation "androidx.test.ext:junit:$test_ext_version"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"

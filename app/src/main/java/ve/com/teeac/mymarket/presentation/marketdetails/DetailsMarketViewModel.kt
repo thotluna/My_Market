@@ -80,11 +80,9 @@ class DetailsMarketViewModel @Inject constructor(
                 productController.onEvent(ProductEvent.UpdateRate(setupController.rate.value.number))
             }
             is DetailsMarketEvent.SaveProduct -> {
-                productController.closeSectionIsRequired()
                 viewModelScope.launch {
                     try {
                         val idMarket = getMarketId()
-                        productController.closeSectionIsRequired()
                         productController.saveProduct(idMarket)
                     } catch (e: InvalidPropertyApp) {
                         _eventFlow.emit(
@@ -122,7 +120,6 @@ class DetailsMarketViewModel @Inject constructor(
             is DetailsMarketEvent.ClearProductForm -> {
                 productController.clear()
             }
-            else -> throw InvalidEventException(InvalidEventException.DETAILS_MARKET_EVENT)
         }
     }
 

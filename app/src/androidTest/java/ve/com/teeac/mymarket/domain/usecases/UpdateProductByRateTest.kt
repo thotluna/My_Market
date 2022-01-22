@@ -17,7 +17,8 @@ import ve.com.teeac.mymarket.di.AppModule
 import ve.com.teeac.mymarket.domain.model.AmountsSetup
 import ve.com.teeac.mymarket.domain.model.Market
 import ve.com.teeac.mymarket.domain.model.MarketDetail
-import ve.com.teeac.mymarket.domain.repositories.MarketsRepository
+import ve.com.teeac.mymarket.domain.usecases.product_use_cases.ProductUseCase
+import ve.com.teeac.mymarket.domain.usecases.setup_use_cases.SetupUseCase
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
@@ -31,7 +32,13 @@ class UpdateProductByRateTest {
     var hiltRule = HiltAndroidRule(this)
 
     @Inject
-    lateinit var useCase: DetailsMarketUseCase
+    lateinit var marketUseCase: MarketUseCases
+
+    @Inject
+    lateinit var useCaseSetup: SetupUseCase
+
+    @Inject
+    lateinit var useCaseProduct: ProductUseCase
 
     private val productWithoutAmounts = MarketDetail(
         id = 3,
@@ -65,31 +72,31 @@ class UpdateProductByRateTest {
     fun setUp()= runTest {
         hiltRule.inject()
 
-        useCase.addMarket(Market(
+        marketUseCase.addMarket(Market(
             date = System.currentTimeMillis(),
             id = 1,
             amount = 50.0,
             amountDollar = 10.0
         ))
-        useCase.addAmountsSetup(AmountsSetup(
+        useCaseSetup.addSetup(AmountsSetup(
             id = 1,
             marketId = 1,
             rate = 5.0,
         ))
-        useCase.addProduct(productDollar)
-        useCase.addProduct(productBs)
-        useCase.addProduct(productWithoutAmounts)
+        useCaseProduct.addProduct(productDollar)
+        useCaseProduct.addProduct(productBs)
+        useCaseProduct.addProduct(productWithoutAmounts)
     }
 
     @Test
     fun productWithoutAmountsTest_Nothing() = runTest{
 
-        useCase.updateProduct(
+        useCaseProduct.updateProducts(
             rate = 5.0,
             marketId = 1
         )
 
-        val product = useCase.getProduct(productWithoutAmounts.id!!)
+        val product = useCaseProduct.getProduct(productWithoutAmounts.id!!)
 
         assertThat(product).isEqualTo(productWithoutAmounts)
 
@@ -98,12 +105,12 @@ class UpdateProductByRateTest {
     @Test
     fun productAmountsBsTest_ChangeAmountDollar() = runTest{
 
-        useCase.updateProduct(
+        useCaseProduct.updateProducts(
             rate = 5.0,
             marketId = 1
         )
 
-        val product = useCase.getProduct(productBs.id!!)
+        val product = useCaseProduct.getProduct(productBs.id!!)
 
         assertThat(product).isNotEqualTo(productBs)
 
@@ -115,12 +122,12 @@ class UpdateProductByRateTest {
     @Test
     fun productAmountsDollarTest_ChangeAmount() = runTest{
 
-        useCase.updateProduct(
+        useCaseProduct.updateProducts(
             rate = 5.0,
             marketId = 1
         )
 
-        val product = useCase.getProduct(productDollar.id!!)
+        val product = useCaseProduct.getProduct(productDollar.id!!)
 
         assertThat(product).isNotEqualTo(productDollar)
 
