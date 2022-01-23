@@ -21,7 +21,7 @@ import ve.com.teeac.mymarket.di.AppModule
 import ve.com.teeac.mymarket.domain.model.AmountsSetup
 import ve.com.teeac.mymarket.domain.model.Market
 import ve.com.teeac.mymarket.domain.usecases.DetailsMarketUseCase
-import ve.com.teeac.mymarket.domain.usecases.setup_use_cases.SetupUseCase
+import ve.com.teeac.mymarket.domain.usecases.SetupUseCase
 import ve.com.teeac.mymarket.presentation.MainActivity
 import javax.inject.Inject
 

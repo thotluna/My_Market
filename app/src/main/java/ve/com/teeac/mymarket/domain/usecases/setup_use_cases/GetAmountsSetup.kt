@@ -6,7 +6,11 @@ import ve.com.teeac.mymarket.domain.repositories.AmountsSetupRepository
 class GetAmountsSetup(
     private val repository: AmountsSetupRepository
 ) {
-    suspend operator fun invoke(marketsId: Long): AmountsSetup? {
+    /**
+     * @param marketsId
+     * @return AmountsSetup?
+     */
+    suspend operator fun invoke(marketsId: Long): AmountsSetup {
         return repository.getAmounts(marketsId)
     }
 }

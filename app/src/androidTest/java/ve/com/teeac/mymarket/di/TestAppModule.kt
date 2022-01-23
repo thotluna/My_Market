@@ -16,10 +16,13 @@ import ve.com.teeac.mymarket.domain.repositories.AmountsSetupRepository
 import ve.com.teeac.mymarket.domain.repositories.DetailMarketRepository
 import ve.com.teeac.mymarket.domain.repositories.MarketsRepository
 import ve.com.teeac.mymarket.domain.usecases.*
+import ve.com.teeac.mymarket.domain.usecases.market_use_cases.AddMarket
+import ve.com.teeac.mymarket.domain.usecases.market_use_cases.GetMarkets
 import ve.com.teeac.mymarket.domain.usecases.product_use_cases.*
 import ve.com.teeac.mymarket.domain.usecases.setup_use_cases.AddAmountsSetup
 import ve.com.teeac.mymarket.domain.usecases.setup_use_cases.GetAmountsSetup
-import ve.com.teeac.mymarket.domain.usecases.setup_use_cases.SetupUseCase
+import ve.com.teeac.mymarket.domain.usecases.SetupUseCase
+import ve.com.teeac.mymarket.domain.usecases.market_use_cases.DeleteMarket
 import ve.com.teeac.mymarket.presentation.marketdetails.amountssetup.SetupController
 import ve.com.teeac.mymarket.presentation.marketdetails.product_form.ProductFormController
 import javax.inject.Singleton
@@ -69,10 +72,15 @@ object TestAppModule {
 
     @Provides
     @Singleton
-    fun provideMarketUseCases(repository: MarketsRepository): MarketUseCases {
+    fun provideMarketUseCases(
+        repository: MarketsRepository,
+        repositorySetup: AmountsSetupRepository,
+        repositoryProduct: DetailMarketRepository
+    ): MarketUseCases {
         return MarketUseCases(
             addMarket = AddMarket(repository),
-            getMarkets = GetMarkets(repository)
+            getMarkets = GetMarkets(repository),
+            deleteMarket = DeleteMarket(repository, repositorySetup, repositoryProduct)
         )
     }
 
@@ -87,7 +95,7 @@ object TestAppModule {
 
     @Provides
     @Singleton
-    fun providerProductUseCases(repository: DetailMarketRepository): ProductUseCase{
+    fun providerProductUseCases(repository: DetailMarketRepository): ProductUseCase {
         return ProductUseCase(
             addProduct= AddProduct(repository),
             getAllProducts= GetAllProducts(repository),

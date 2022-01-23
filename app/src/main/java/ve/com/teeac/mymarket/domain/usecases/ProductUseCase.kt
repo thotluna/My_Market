@@ -1,4 +1,6 @@
-package ve.com.teeac.mymarket.domain.usecases.product_use_cases
+package ve.com.teeac.mymarket.domain.usecases
+
+import ve.com.teeac.mymarket.domain.usecases.product_use_cases.*
 
 data class ProductUseCase(
     val addProduct: AddProduct,

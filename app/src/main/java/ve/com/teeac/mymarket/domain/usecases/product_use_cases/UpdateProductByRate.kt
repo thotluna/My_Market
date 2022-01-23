@@ -11,7 +11,7 @@ class UpdateProductByRate(
 
         repository.addListProduct(
             list.map{
-                    it.addRate(rate)
+                it.addRate(rate)
             }
         )
     }

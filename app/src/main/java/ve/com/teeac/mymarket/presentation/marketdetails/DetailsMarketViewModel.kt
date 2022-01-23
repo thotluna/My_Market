@@ -14,7 +14,6 @@ import kotlinx.coroutines.withContext
 import ve.com.teeac.mymarket.domain.model.Market
 import ve.com.teeac.mymarket.domain.model.MarketDetail
 import ve.com.teeac.mymarket.domain.usecases.DetailsMarketUseCase
-import ve.com.teeac.mymarket.presentation.InvalidEventException
 import ve.com.teeac.mymarket.presentation.InvalidPropertyApp
 import ve.com.teeac.mymarket.presentation.marketdetails.amountssetup.AmountSetupEvent
 import ve.com.teeac.mymarket.presentation.marketdetails.amountssetup.SetupController

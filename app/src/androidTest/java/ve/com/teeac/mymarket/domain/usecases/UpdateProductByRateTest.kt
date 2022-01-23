@@ -17,8 +17,6 @@ import ve.com.teeac.mymarket.di.AppModule
 import ve.com.teeac.mymarket.domain.model.AmountsSetup
 import ve.com.teeac.mymarket.domain.model.Market
 import ve.com.teeac.mymarket.domain.model.MarketDetail
-import ve.com.teeac.mymarket.domain.usecases.product_use_cases.ProductUseCase
-import ve.com.teeac.mymarket.domain.usecases.setup_use_cases.SetupUseCase
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi

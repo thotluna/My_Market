@@ -17,9 +17,10 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import ve.com.teeac.mymarket.domain.model.Market
-import ve.com.teeac.mymarket.domain.usecases.AddMarket
-import ve.com.teeac.mymarket.domain.usecases.GetMarkets
+import ve.com.teeac.mymarket.domain.usecases.market_use_cases.AddMarket
+import ve.com.teeac.mymarket.domain.usecases.market_use_cases.GetMarkets
 import ve.com.teeac.mymarket.domain.usecases.MarketUseCases
+import ve.com.teeac.mymarket.domain.usecases.market_use_cases.DeleteMarket
 
 
 @ExperimentalCoroutinesApi
@@ -32,6 +33,9 @@ class MarketsViewModelTest {
 
     @MockK
     lateinit var getMarkets: GetMarkets
+
+    @MockK
+    lateinit var deleteMarket: DeleteMarket
 
     private var listMarkets = listOf(
         Market(
@@ -67,7 +71,7 @@ class MarketsViewModelTest {
 
     @Test
     fun initialViewModel(){
-        val useCases = MarketUseCases(addMarkets, getMarkets)
+        val useCases = MarketUseCases(addMarkets, getMarkets, deleteMarket)
 
         every { useCases.getMarkets() } answers {
             flow {

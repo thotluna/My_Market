@@ -1,4 +1,4 @@
-package ve.com.teeac.mymarket.domain.usecases
+package ve.com.teeac.mymarket.domain.usecases.product_use_cases
 
 import ve.com.teeac.mymarket.domain.repositories.DetailMarketRepository
 

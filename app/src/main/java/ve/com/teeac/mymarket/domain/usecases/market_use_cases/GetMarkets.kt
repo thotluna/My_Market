@@ -1,4 +1,4 @@
-package ve.com.teeac.mymarket.domain.usecases
+package ve.com.teeac.mymarket.domain.usecases.market_use_cases
 
 import kotlinx.coroutines.flow.Flow
 import ve.com.teeac.mymarket.domain.model.Market

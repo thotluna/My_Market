@@ -12,9 +12,9 @@ import kotlinx.coroutines.test.setMain
 import org.junit.Before
 import org.junit.Test
 import ve.com.teeac.mymarket.domain.model.MarketDetail
+import ve.com.teeac.mymarket.domain.usecases.ProductUseCase
 import ve.com.teeac.mymarket.domain.usecases.product_use_cases.*
 import ve.com.teeac.mymarket.utils.roundOffDecimal
-import kotlin.math.roundToInt
 
 @ExperimentalCoroutinesApi
 class ProductFormControllerTest {
@@ -155,8 +155,8 @@ class ProductFormControllerTest {
         val rate = 3
         val expected = product.copy(
             id = null,
-            unitAmountDollar = roundOffDecimal(product.unitAmount / rate.toDouble())!!,
-            amountDollar =  roundOffDecimal(product.unitAmount / rate)!! * product.quantity
+            unitAmountDollar = roundOffDecimal(product.unitAmount / rate.toDouble()),
+            amountDollar =  roundOffDecimal(product.unitAmount / rate) * product.quantity
         )
         val sendProduct = slot<MarketDetail>()
         coEvery { useCase.addProduct(capture(sendProduct)) } coAnswers { product.id }

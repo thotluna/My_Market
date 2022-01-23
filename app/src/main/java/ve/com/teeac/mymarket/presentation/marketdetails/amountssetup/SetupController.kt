@@ -5,7 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.*
 import ve.com.teeac.mymarket.domain.model.AmountsSetup
-import ve.com.teeac.mymarket.domain.usecases.setup_use_cases.SetupUseCase
+import ve.com.teeac.mymarket.domain.usecases.SetupUseCase
 import ve.com.teeac.mymarket.presentation.marketdetails.NumberTextFieldState
 
 class SetupController(

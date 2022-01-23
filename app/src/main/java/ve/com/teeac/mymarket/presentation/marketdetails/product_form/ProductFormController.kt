@@ -4,7 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.*
 import ve.com.teeac.mymarket.domain.model.MarketDetail
-import ve.com.teeac.mymarket.domain.usecases.product_use_cases.ProductUseCase
+import ve.com.teeac.mymarket.domain.usecases.ProductUseCase
 import ve.com.teeac.mymarket.presentation.InvalidPropertyApp
 import ve.com.teeac.mymarket.presentation.marketdetails.NoteTextFieldState
 import ve.com.teeac.mymarket.presentation.marketdetails.NumberTextFieldState
@@ -107,7 +107,7 @@ class ProductFormController(
         closeSectionIsRequired()
     }
 
-    fun closeSectionIsRequired() {
+    private fun closeSectionIsRequired() {
         if (!persistentShowSection.value) {
             _idSectionVisible.value = false
         }

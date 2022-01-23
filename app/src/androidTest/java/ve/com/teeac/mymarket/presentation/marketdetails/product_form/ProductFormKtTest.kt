@@ -5,23 +5,19 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.junit.Assert.assertThrows
 
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import ve.com.teeac.mymarket.di.AppModule
 import ve.com.teeac.mymarket.domain.model.MarketDetail
-import ve.com.teeac.mymarket.presentation.InvalidPropertyApp
 import ve.com.teeac.mymarket.presentation.MainActivity
 import ve.com.teeac.mymarket.presentation.components.MyMarketApp
 import ve.com.teeac.mymarket.utils.TestTags
-import java.lang.NullPointerException
 import javax.inject.Inject
 
 @ExperimentalMaterialApi
