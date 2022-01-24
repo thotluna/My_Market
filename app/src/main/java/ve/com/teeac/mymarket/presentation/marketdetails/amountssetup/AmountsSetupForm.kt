@@ -10,12 +10,15 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusOrder
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -40,9 +43,11 @@ fun AmountSetupForm(
 ) {
 
     val focusManager = LocalFocusManager.current
-    val (secondSetup, thirdSetup, fourthSetup) = FocusRequester.createRefs()
+    val focusRequester = remember { FocusRequester }
+    val (firstField, secondField, thirdField) = focusRequester.createRefs()
     val keyboardController = LocalSoftwareKeyboardController.current
     val context = LocalContext.current
+
 
 
     Row(
@@ -62,7 +67,8 @@ fun AmountSetupForm(
             textStyle = MaterialTheme.typography.body1,
             modifier = Modifier
                 .weight(1f)
-                .focusOrder(secondSetup) { down = thirdSetup },
+                .focusRequester(focusRequester.Default)
+                .focusOrder(firstField) { down = secondField },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(
                 onNext = {
@@ -80,7 +86,7 @@ fun AmountSetupForm(
             textStyle = MaterialTheme.typography.body1,
             modifier = Modifier
                 .weight(1f)
-                .focusOrder(thirdSetup) { down = fourthSetup },
+                .focusOrder(secondField) { down = thirdField },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(
                 onNext = {
@@ -98,7 +104,8 @@ fun AmountSetupForm(
             textStyle = MaterialTheme.typography.body1,
             modifier = Modifier
                 .weight(1f)
-                .focusOrder(fourthSetup),
+
+                .focusOrder(thirdField),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(
                 onDone = {
@@ -120,6 +127,10 @@ fun AmountSetupForm(
         }
     }
 
+    DisposableEffect(Unit){
+        firstField.requestFocus()
+        onDispose { }
+    }
 
 }
 

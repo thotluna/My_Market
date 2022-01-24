@@ -77,21 +77,6 @@ fun DetailsMarketScreen(
         topBar = {
             TopAppBar {
                 Row(
-                    Modifier.fillMaxHeight(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        onClick = { navigateUp() },
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = stringResource(R.string.button_back)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                }
-
-                Row(
                     Modifier
                         .fillMaxHeight()
                         .weight(1f),
@@ -100,11 +85,35 @@ fun DetailsMarketScreen(
                     Text(text = "${context.getString(R.string.app_name)} ${viewModel.state.value.marketId}")
                 }
 
-                Row(
-                    Modifier.fillMaxHeight(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.End
-                ) {
+            }
+
+        },
+        bottomBar = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ){
+                Column(modifier = Modifier
+                    .weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally){
+                    IconButton(
+                        onClick = { navigateUp() },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = stringResource(R.string.button_back)
+                        )
+                    }
+                    Text(text = "Atras")
+                }
+                Column(
+                    modifier = Modifier
+                        .weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
                     IconButton(
                         onClick = {
                             viewModel.setupController.onToggleSection()
@@ -115,7 +124,13 @@ fun DetailsMarketScreen(
                             contentDescription = stringResource(R.string.button_open_hide_setup_section)
                         )
                     }
-                    Spacer(modifier = Modifier.widthIn(4.dp))
+                    Text(text = "Setup")
+                }
+                Column(
+                    modifier = Modifier
+                        .weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
                     IconButton(
                         onClick = {
                             viewModel.productController.onToggleSection()
@@ -127,11 +142,9 @@ fun DetailsMarketScreen(
                             contentDescription = stringResource(R.string.button_open_product_section)
                         )
                     }
+                    Text(text = "Productos")
                 }
-
-
             }
-
         },
         scaffoldState = scaffoldState
     ) { it ->

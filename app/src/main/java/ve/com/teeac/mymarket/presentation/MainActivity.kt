@@ -8,6 +8,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import ve.com.teeac.mymarket.R
 import ve.com.teeac.mymarket.presentation.components.MyMarketApp
 import ve.com.teeac.mymarket.presentation.navigation.MarketNavHost
 
@@ -18,6 +19,7 @@ import ve.com.teeac.mymarket.presentation.navigation.MarketNavHost
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_MyMarket)
         super.onCreate(savedInstanceState)
         setContent {
             MyMarketApp {

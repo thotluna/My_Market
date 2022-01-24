@@ -22,6 +22,8 @@ import ve.com.teeac.mymarket.R
 import ve.com.teeac.mymarket.domain.model.Market
 import ve.com.teeac.mymarket.utils.TestTags
 import ve.com.teeac.mymarket.utils.getDate
+import java.text.NumberFormat
+import java.util.*
 
 @Composable
 fun MarketsScreen(
@@ -114,11 +116,26 @@ fun ItemMarkets(item: Market, modifier: Modifier = Modifier, onClick: (id: Long)
                     item.amountDollar
                 )
             )
+            
+            try{
+                Locale.setDefault(Locale("VE", "VE"))
+            }catch (e: Exception){
+                println(e.message)
+            }
+
+            val nF = NumberFormat
+                .getNumberInstance()
+
+            val values = nF.currency.symbol
+
+            val valuesTotal = "${nF.format(item.amount)} $values"
+
             Text(
-                text = stringResource(
-                    id = R.string.string_bs,
-                    item.amount
-                )
+                text = valuesTotal
+//                stringResource(
+//                    id = R.string.string_bs,
+//                    item.amount
+//                )
             )
 
         }

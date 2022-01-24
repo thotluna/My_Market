@@ -5,6 +5,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -13,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusOrder
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -46,7 +48,8 @@ fun ProductForm(
     onSave: () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
-    val (first, second, third, fourth) = FocusRequester.createRefs()
+    val focusRequester = remember { FocusRequester }
+    val (first, second, third, fourth) = focusRequester.createRefs()
     val keyboardController = LocalSoftwareKeyboardController.current
     val context = LocalContext.current
 
@@ -80,9 +83,10 @@ fun ProductForm(
                 verticalAlignment = Alignment.CenterVertically,){
                 NumberField(
                     number = quantity.number,
-                    label = { Text(quantity.title) },
+                    label = { Text(quantity.title, fontSize = 12.sp) },
                     onNumberChange = quantityChange,
                     modifier = Modifier
+                        .focusRequester(focusRequester.Default)
                         .focusOrder(first) { down = second }
                         .weight(1f),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -96,7 +100,7 @@ fun ProductForm(
 
                 TextField(
                     value = description.text ?: "",
-                    label = { Text(description.hint) },
+                    label = { Text(description.hint, fontSize = 12.sp) },
                     onValueChange = descriptionChange,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -121,7 +125,7 @@ fun ProductForm(
 
                 NumberField(
                     number = amountBs.number,
-                    label = { Text(amountBs.title) },
+                    label = { Text(amountBs.title, fontSize = 12.sp) },
                     onNumberChange = amountBsChange,
                     modifier = Modifier
                         .weight(1f)
@@ -136,7 +140,7 @@ fun ProductForm(
                 )
                 NumberField(
                     number = amountDollar.number,
-                    label = { Text(amountDollar.title) },
+                    label = { Text(amountDollar.title, fontSize = 12.sp) },
                     onNumberChange = amountDollarChange,
                     modifier = Modifier
                         .weight(1f)
@@ -152,6 +156,10 @@ fun ProductForm(
                 )
             }
         }
+    }
+    DisposableEffect(Unit){
+        first.requestFocus()
+        onDispose { }
     }
 }
 
