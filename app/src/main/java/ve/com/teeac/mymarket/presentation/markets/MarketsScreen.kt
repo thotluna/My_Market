@@ -17,6 +17,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.insets.statusBarsPadding
 import kotlinx.coroutines.flow.collectLatest
 import ve.com.teeac.mymarket.R
 import ve.com.teeac.mymarket.domain.model.Market
@@ -48,7 +49,9 @@ fun MarketsScreen(
         }
     }
 
+
     Scaffold(
+//        modifier = Modifier.statusBarsPadding(),
         topBar = { TopBar() },
         floatingActionButton = {
             FloatingActionButton(
@@ -108,34 +111,23 @@ fun ItemMarkets(item: Market, modifier: Modifier = Modifier, onClick: (id: Long)
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = getDate(item.date)
+                text = getDate(item.date),
+                style = MaterialTheme.typography.caption
             )
             Text(
                 text = stringResource(
                     id = R.string.string_dollar,
                     item.amountDollar
-                )
+                ),
+                style = MaterialTheme.typography.caption
             )
-            
-            try{
-                Locale.setDefault(Locale("VE", "VE"))
-            }catch (e: Exception){
-                println(e.message)
-            }
-
-            val nF = NumberFormat
-                .getNumberInstance()
-
-            val values = nF.currency.symbol
-
-            val valuesTotal = "${nF.format(item.amount)} $values"
 
             Text(
-                text = valuesTotal
-//                stringResource(
-//                    id = R.string.string_bs,
-//                    item.amount
-//                )
+                text = stringResource(
+                    id = R.string.string_bs,
+                    item.amount
+                ),
+                style = MaterialTheme.typography.caption
             )
 
         }
@@ -147,6 +139,10 @@ fun ItemMarkets(item: Market, modifier: Modifier = Modifier, onClick: (id: Long)
 @Composable
 private fun TopBar() {
     TopAppBar {
-        Text(text = stringResource(R.string.title_app), Modifier.padding(vertical = 8.dp))
+        Text(
+            text = stringResource(R.string.title_app),
+            modifier = Modifier.padding(vertical = 8.dp)
+                .statusBarsPadding(),
+        )
     }
 }

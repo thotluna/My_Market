@@ -80,6 +80,7 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$appCompat_version"
     implementation "com.google.android.material:material:$appCompat_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
+    implementation "com.google.accompanist:accompanist-insets:0.20.2"
 
     // Compose dependencies
     implementation "androidx.activity:activity-compose:$appCompat_version"
